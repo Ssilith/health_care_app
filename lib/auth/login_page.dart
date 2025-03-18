@@ -2,10 +2,10 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:health_care_app/auth/forgot_pass_page.dart';
 import 'package:health_care_app/auth/form_container.dart';
 import 'package:health_care_app/auth/login_button.dart';
 import 'package:health_care_app/main.dart';
+import 'package:health_care_app/widgets/input_dialog.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/text_button.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
@@ -21,11 +21,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+  TextEditingController remindEmail = TextEditingController();
 
   @override
   void dispose() {
     email.dispose();
     password.dispose();
+    remindEmail.dispose();
     super.dispose();
   }
 
@@ -68,10 +70,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         const SizedBox(height: 15),
         MyTextButton(
-          onPressed:
-              () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const ForgotPassPage()),
-              ),
+          onPressed: changePassword,
           title: 'Forgot your password?',
           textPadding: EdgeInsets.zero,
         ),
@@ -79,10 +78,48 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // sign in
   Future signIn(String email, String password) async {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
+    );
+  }
+
+  // reset password
+  Future resetPassword(String email) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
+  // change password function
+  void changePassword() {
+    remindEmail.clear();
+    showDialog<String>(
+      context: context,
+      builder:
+          (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: Builder(
+              builder: (context) {
+                return InputDialog(
+                  controller: remindEmail,
+                  title: 'Forgot your password? Don\'t worry!',
+                  hint: 'E-mail',
+                  iconData: Icons.person,
+                  onPressed: () async {
+                    String userEmail = remindEmail.text;
+                    try {
+                      await resetPassword(userEmail);
+                      Navigator.of(context).pop();
+                      displaySuccessMotionToast('Email was sent.', context);
+                    } catch (e) {
+                      displayErrorMotionToast('Failed to send email.', context);
+                    }
+                  },
+                );
+              },
+            ),
+          ),
     );
   }
 }

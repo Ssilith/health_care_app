@@ -2,6 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:health_care_app/appointments/main_appointments.dart';
+import 'package:health_care_app/chat/chat_page.dart';
+import 'package:health_care_app/localization/hospital_finder.dart';
+import 'package:health_care_app/localization/pharmacy_finder.dart';
+import 'package:health_care_app/notebook/main_notebook.dart';
+import 'package:health_care_app/notifications/main_notifications.dart';
 
 List<Map<String, String>> homePageActions = [
   {'Pill notifications': 'assets/undraw_medical_care_movn.svg'},
@@ -15,23 +21,17 @@ List<Map<String, String>> homePageActions = [
 Widget getActionRoute(String actionKey) {
   switch (actionKey) {
     case 'Pill notifications':
-      return const SizedBox();
-    // return const MainNotifications();
+      return const MainNotifications();
     case 'Med notebook':
-      return const SizedBox();
-    // return const MainNotebook();
+      return const MainNotebook();
     case 'Appointments':
-      return const SizedBox();
-    // return const MainAppointments();
+      return const MainAppointments();
     case 'Chat bot':
-      return const SizedBox();
-    // return const ChatPage();
+      return const ChatPage();
     case 'Nearest hospitals':
-      return const SizedBox();
-    // return const HospitalFinder();
+      return const HospitalFinder();
     case 'Nearest pharmacies':
-      return const SizedBox();
-    // return const PharmacyFinder();
+      return const PharmacyFinder();
   }
   return const SizedBox.shrink();
 }

@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/auth/form_container.dart';
 import 'package:health_care_app/auth/login_button.dart';
-import 'package:health_care_app/auth/login_page_template.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
 
@@ -67,11 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
             try {
               await signUp(userEmail, userPassword, userRepeatPassword);
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const LoginPageTemplate(),
-                ),
-              );
+              widget.callback();
             } catch (e) {
               displayErrorMotionToast('Failed to sign up.', context);
             }
