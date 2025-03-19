@@ -19,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController repeatPassword = TextEditingController();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -59,15 +60,19 @@ class _SignUpPageState extends State<SignUpPage> {
         const SizedBox(height: 15),
         LoginButton(
           title: "SIGN UP",
+          isLoading: isLoading,
           onPressed: () async {
             String userEmail = email.text;
             String userPassword = password.text;
             String userRepeatPassword = repeatPassword.text;
 
             try {
+              setState(() => isLoading = true);
               await signUp(userEmail, userPassword, userRepeatPassword);
+              setState(() => isLoading = false);
               widget.callback();
             } catch (e) {
+              setState(() => isLoading = false);
               displayErrorMotionToast('Failed to sign up.', context);
             }
           },

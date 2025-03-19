@@ -28,28 +28,30 @@ Future<String> fetchChatGPTResponse(String prompt, BuildContext context) async {
       "messages": [
         {
           "role": "user",
-          "content": 'Summarize the following text impersonal: \n\n$prompt'
-        }
+          "content": 'Summarize the following text impersonal: \n\n$prompt',
+        },
       ],
-      'max_tokens': 1000
+      'max_tokens': 1000,
     });
 
-    var response = await http.post(Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $apiKey',
-        },
-        body: requestBody);
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: requestBody,
+    );
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       return data['choices'][0]['message']['content'];
     } else {
-      displayErrorMotionToast('Failed to get reponse', context);
+      displayErrorMotionToast('Failed to get response', context);
       return "";
     }
   } catch (e) {
-    displayErrorMotionToast('Error occurred. Failed to get reponse', context);
+    displayErrorMotionToast('Error occurred. Failed to get response', context);
     return "";
   }
 }
@@ -63,15 +65,17 @@ Future<String> sendPrompt(String prompt, BuildContext context) async {
       'model': 'gpt-3.5-turbo',
       "messages": chatMessages,
       'max_tokens': 1000,
-      'temperature': 0.7
+      'temperature': 0.7,
     });
 
-    var response = await http.post(Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $apiKey',
-        },
-        body: requestBody);
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: requestBody,
+    );
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);

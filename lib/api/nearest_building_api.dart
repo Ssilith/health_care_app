@@ -1,13 +1,23 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
 String url = 'https://api.geoapify.com/v2/places?categories=healthcare';
-var apiKey = 'c0b58467168f4bc2b991a3b3445693dc';
 int limit = 7;
 int distance = 10000;
 String filterType = 'circle';
+
+Future<String> getApiKey() async {
+  try {
+    final String response = await rootBundle.loadString('assets/secrets.json');
+    final configData = await json.decode(response);
+    return configData['geo_key'];
+  } catch (e) {
+    return "";
+  }
+}
 
 Future<List<Building>> findNearestPharmacy(LocationData locationData) async {
   List<Building> pharmacies = [];
@@ -16,7 +26,8 @@ Future<List<Building>> findNearestPharmacy(LocationData locationData) async {
 
   var response = await http.get(
     Uri.parse(
-        '$url.pharmacy&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=$apiKey'),
+      '$url.pharmacy&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=${getApiKey()}',
+    ),
   );
 
   if (response.statusCode == 200) {
@@ -33,7 +44,8 @@ Future<List<Building>> findNearestHospital(LocationData locationData) async {
 
   var response = await http.get(
     Uri.parse(
-        '$url.hospital&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=$apiKey'),
+      '$url.hospital&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=${getApiKey()}',
+    ),
   );
 
   if (response.statusCode == 200) {
@@ -56,13 +68,15 @@ List<Building> parseBuilding(String responseBody) {
     String? phone = feature['properties']['datasource']['raw']['phone'];
     String? website = feature['properties']['datasource']['raw']['website'];
 
-    building.add(Building(
-      location: LatLng(lat, lon),
-      name: name,
-      address: address,
-      phone: phone,
-      website: website,
-    ));
+    building.add(
+      Building(
+        location: LatLng(lat, lon),
+        name: name,
+        address: address,
+        phone: phone,
+        website: website,
+      ),
+    );
   }
 
   return building;

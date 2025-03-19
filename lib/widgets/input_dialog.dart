@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/auth/login_button.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
 
 class InputDialog extends StatelessWidget {
@@ -7,15 +6,14 @@ class InputDialog extends StatelessWidget {
   final String hint;
   final IconData? iconData;
   final TextEditingController controller;
-  final VoidCallback onPressed;
-
+  final Widget button;
   const InputDialog({
     super.key,
     required this.controller,
-    required this.onPressed,
     required this.title,
     required this.hint,
     this.iconData,
+    required this.button,
   });
 
   @override
@@ -49,7 +47,7 @@ class InputDialog extends StatelessWidget {
             iconData: iconData,
           ),
           const SizedBox(height: 15),
-          LoginButton(onPressed: onPressed, title: "Confirm"),
+          button,
         ],
       ),
     );

@@ -14,12 +14,10 @@ class BlankScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: floatingActionButton,
       body: Stack(
         children: [
-          Image.asset('logo.png', height: size.height * 0.2),
           body,
           if (showLeading)
             Positioned(

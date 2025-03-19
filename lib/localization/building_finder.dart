@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:health_care_app/api/nearest_building_api.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/localization/building_details.dart';
+import 'package:health_care_app/widgets/loading.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -47,7 +48,7 @@ class _BuildingFinderState extends State<BuildingFinder> {
     return BlankScaffold(
       body:
           isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Loading()
               : widget.userLocation == null ||
                   widget.building.isEmpty ||
                   widget.building == []
@@ -90,28 +91,26 @@ class _BuildingFinderState extends State<BuildingFinder> {
                           color: Colors.blue,
                         ),
                       ),
-                      ...widget.building
-                          .map(
-                            (building) => Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: building.location,
-                              child: IconButton(
-                                onPressed:
-                                    () => showModalBottomSheet(
-                                      context: context,
-                                      builder:
-                                          (BuildContext context) =>
-                                              BuildingInfo(building: building),
-                                    ),
-                                icon: const Icon(
-                                  Icons.location_pin,
-                                  color: Colors.green,
+                      ...widget.building.map(
+                        (building) => Marker(
+                          width: 80.0,
+                          height: 80.0,
+                          point: building.location,
+                          child: IconButton(
+                            onPressed:
+                                () => showModalBottomSheet(
+                                  context: context,
+                                  builder:
+                                      (BuildContext context) =>
+                                          BuildingInfo(building: building),
                                 ),
-                              ),
+                            icon: const Icon(
+                              Icons.location_pin,
+                              color: Colors.green,
                             ),
-                          )
-                          .toList(),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],

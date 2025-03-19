@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController remindEmail = TextEditingController();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -54,16 +55,20 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 15),
         LoginButton(
           title: "LOGIN",
+          isLoading: isLoading,
           onPressed: () async {
             String userEmail = email.text;
             String userPassword = password.text;
 
             try {
+              setState(() => isLoading = true);
               await signIn(userEmail, userPassword);
+              setState(() => isLoading = false);
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const MyHomePage()),
               );
             } catch (e) {
+              setState(() => isLoading = false);
               displayErrorMotionToast('Failed to log in.', context);
             }
           },
@@ -106,16 +111,23 @@ class _LoginPageState extends State<LoginPage> {
                   title: 'Forgot your password? Don\'t worry!',
                   hint: 'E-mail',
                   iconData: Icons.person,
-                  onPressed: () async {
-                    String userEmail = remindEmail.text;
-                    try {
-                      await resetPassword(userEmail);
-                      Navigator.of(context).pop();
-                      displaySuccessMotionToast('Email was sent.', context);
-                    } catch (e) {
-                      displayErrorMotionToast('Failed to send email.', context);
-                    }
-                  },
+                  button: LoginButton(
+                    title: "Confirm",
+                    isLoading: isLoading,
+                    onPressed: () async {
+                      String userEmail = remindEmail.text;
+                      try {
+                        await resetPassword(userEmail);
+                        Navigator.of(context).pop();
+                        displaySuccessMotionToast('Email was sent.', context);
+                      } catch (e) {
+                        displayErrorMotionToast(
+                          'Failed to send email.',
+                          context,
+                        );
+                      }
+                    },
+                  ),
                 );
               },
             ),
