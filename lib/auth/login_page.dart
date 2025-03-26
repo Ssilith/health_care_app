@@ -68,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                 MaterialPageRoute(builder: (context) => const MyHomePage()),
               );
             } catch (e) {
+              print(e);
               setState(() => isLoading = false);
               displayErrorMotionToast('Failed to log in.', context);
             }

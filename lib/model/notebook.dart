@@ -15,7 +15,7 @@ class Notebook {
     required this.noteContent,
   });
 
-  factory Notebook.fromSnaphot(DocumentSnapshot snapshot) {
+  factory Notebook.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return Notebook(
       id: snapshot.id,
@@ -44,5 +44,4 @@ class Notebook {
       'noteContent': noteContent,
     };
   }
-
 }

@@ -20,10 +20,11 @@ class PopupWindow extends StatelessWidget {
         title,
         textAlign: TextAlign.center,
         style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.w500,
-            height: 0.5,
-            color: Colors.black),
+          fontSize: 25,
+          fontWeight: FontWeight.w500,
+          height: 0.5,
+          color: Colors.black,
+        ),
       ),
       backgroundColor: const Color.fromARGB(249, 243, 246, 254),
       content: Column(
@@ -32,28 +33,25 @@ class PopupWindow extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black,
-            ),
+            style: const TextStyle(fontSize: 18, color: Colors.black),
           ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SimpleButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  title: "Cancel",
-                  textColor: const Color.fromARGB(249, 243, 246, 254),
-                  width: 120),
-              const SizedBox(
-                width: 5,
+                onPressed: () => Navigator.of(context).pop(),
+                title: "Cancel",
+                textColor: const Color.fromARGB(249, 243, 246, 254),
+                width: 120,
               ),
+              const SizedBox(width: 5),
               SimpleButton(
-                  textColor: const Color.fromARGB(249, 243, 246, 254),
-                  onPressed: onPressed,
-                  title: "Confirm",
-                  width: 120),
+                textColor: const Color.fromARGB(249, 243, 246, 254),
+                onPressed: onPressed,
+                title: "Confirm",
+                width: 120,
+              ),
             ],
           ),
         ],

@@ -8,13 +8,14 @@ class NavigateToContainer extends StatelessWidget {
   final String mess;
   final String? url;
   final bool isOnTap;
-  const NavigateToContainer(
-      {super.key,
-      required this.icon,
-      required this.title,
-      required this.mess,
-      this.url,
-      this.isOnTap = true});
+  const NavigateToContainer({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.mess,
+    this.url,
+    this.isOnTap = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +32,7 @@ class NavigateToContainer extends StatelessWidget {
           child: IntrinsicHeight(
             child: Row(
               children: [
-                Icon(
-                  icon,
-                  size: 38.0,
-                  color: Theme.of(context).primaryColor,
-                ),
+                Icon(icon, size: 38.0, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 3),
                 VerticalDivider(
                   thickness: 1,
@@ -49,7 +46,9 @@ class NavigateToContainer extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.normal),
+                          color: Colors.black,
+                          fontWeight: FontWeight.normal,
+                        ),
                       ),
                       Expanded(
                         child: Text(
@@ -68,11 +67,12 @@ class NavigateToContainer extends StatelessWidget {
                 ),
                 if (isOnTap)
                   IconButton(
-                    onPressed: isOnTap
-                        ? () async {
-                            if (url != null) _launchUrl(url!);
-                          }
-                        : null,
+                    onPressed:
+                        isOnTap
+                            ? () async {
+                              if (url != null) _launchUrl(url!);
+                            }
+                            : null,
                     icon: Icon(
                       Icons.arrow_forward_ios,
                       color: Theme.of(context).primaryColor,
@@ -81,9 +81,12 @@ class NavigateToContainer extends StatelessWidget {
                   ),
                 if (title == 'Name')
                   IconButton(
-                      onPressed: () => copyToClipboard(mess),
-                      icon: Icon(Icons.copy,
-                          color: Theme.of(context).primaryColor))
+                    onPressed: () => copyToClipboard(mess),
+                    icon: Icon(
+                      Icons.copy,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -95,7 +98,7 @@ class NavigateToContainer extends StatelessWidget {
   _launchUrl(String url) async {
     Uri urlAddress = Uri.parse(url);
     if (!await launchUrl(urlAddress)) {
-      throw Exception('Nie można połączyć z $urlAddress');
+      throw Exception('Cannot launch url: $urlAddress');
     }
   }
 }

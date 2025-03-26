@@ -58,7 +58,7 @@ class _BuildingFinderState extends State<BuildingFinder> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SvgPicture.asset(
-                      'assets/undraw_my_location_re_r52x.svg',
+                      'assets/photos/location.svg',
                       height: size.height * 0.25,
                     ),
                     const SizedBox(height: 10),

@@ -20,13 +20,14 @@ Future<String> getApiKey() async {
 }
 
 Future<List<Building>> findNearestPharmacy(LocationData locationData) async {
+  String apiKey = await getApiKey();
   List<Building> pharmacies = [];
   var latitude = locationData.latitude;
   var longitude = locationData.longitude;
 
   var response = await http.get(
     Uri.parse(
-      '$url.pharmacy&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=${getApiKey()}',
+      '$url.pharmacy&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=$apiKey',
     ),
   );
 
@@ -38,13 +39,14 @@ Future<List<Building>> findNearestPharmacy(LocationData locationData) async {
 }
 
 Future<List<Building>> findNearestHospital(LocationData locationData) async {
+  String apiKey = await getApiKey();
   List<Building> hospitals = [];
   var latitude = locationData.latitude;
   var longitude = locationData.longitude;
 
   var response = await http.get(
     Uri.parse(
-      '$url.hospital&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=${getApiKey()}',
+      '$url.hospital&filter=$filterType:$longitude,$latitude,$distance&limit=$limit&apiKey=$apiKey',
     ),
   );
 

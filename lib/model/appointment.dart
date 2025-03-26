@@ -19,7 +19,7 @@ class Appointment {
     this.purpose,
   });
 
-  factory Appointment.fromSnaphot(DocumentSnapshot snapshot) {
+  factory Appointment.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return Appointment(
       id: snapshot.id,

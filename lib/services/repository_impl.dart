@@ -19,24 +19,26 @@ class RepositoryImpl implements Repository {
 
     DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
 
-    return Appointment.fromSnaphot(documentSnapshot);
+    return Appointment.fromSnapshot(documentSnapshot);
   }
 
   @override
   Future<List<Appointment>> getAppointments() async {
-    var querySnapshot = await _firestore
-        .collection(FirebasePaths.appointments)
-        .where("userId", isEqualTo: getUserId())
-        .get();
+    var querySnapshot =
+        await _firestore
+            .collection(FirebasePaths.appointments)
+            .where("userId", isEqualTo: getUserId())
+            .get();
     return querySnapshot.docs
-        .map((doc) => Appointment.fromSnaphot(doc))
+        .map((doc) => Appointment.fromSnapshot(doc))
         .toList();
   }
 
   @override
   Future<void> deleteAppointment(String id) async {
-    var questionDocRef =
-        _firestore.collection(FirebasePaths.appointments).doc(id);
+    var questionDocRef = _firestore
+        .collection(FirebasePaths.appointments)
+        .doc(id);
     return await questionDocRef.delete();
   }
 
@@ -48,24 +50,26 @@ class RepositoryImpl implements Repository {
 
     DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
 
-    return Notification.fromSnaphot(documentSnapshot);
+    return Notification.fromSnapshot(documentSnapshot);
   }
 
   @override
   Future<List<Notification>> getNotifications() async {
-    var querySnapshot = await _firestore
-        .collection(FirebasePaths.notifications)
-        .where("userId", isEqualTo: getUserId())
-        .get();
+    var querySnapshot =
+        await _firestore
+            .collection(FirebasePaths.notifications)
+            .where("userId", isEqualTo: getUserId())
+            .get();
     return querySnapshot.docs
-        .map((doc) => Notification.fromSnaphot(doc))
+        .map((doc) => Notification.fromSnapshot(doc))
         .toList();
   }
 
   @override
   Future<void> deleteNotification(String id) async {
-    var questionDocRef =
-        _firestore.collection(FirebasePaths.notifications).doc(id);
+    var questionDocRef = _firestore
+        .collection(FirebasePaths.notifications)
+        .doc(id);
     return await questionDocRef.delete();
   }
 
@@ -77,22 +81,22 @@ class RepositoryImpl implements Repository {
 
     DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
 
-    return Notebook.fromSnaphot(documentSnapshot);
+    return Notebook.fromSnapshot(documentSnapshot);
   }
 
   @override
   Future<List<Notebook>> getNotes() async {
-    var querySnapshot = await _firestore
-        .collection(FirebasePaths.notes)
-        .where("userId", isEqualTo: getUserId())
-        .get();
-    return querySnapshot.docs.map((doc) => Notebook.fromSnaphot(doc)).toList();
+    var querySnapshot =
+        await _firestore
+            .collection(FirebasePaths.notes)
+            .where("userId", isEqualTo: getUserId())
+            .get();
+    return querySnapshot.docs.map((doc) => Notebook.fromSnapshot(doc)).toList();
   }
 
   @override
   Future<void> deleteNote(String id) async {
-    var questionDocRef =
-        _firestore.collection(FirebasePaths.notes).doc(id);
+    var questionDocRef = _firestore.collection(FirebasePaths.notes).doc(id);
     return await questionDocRef.delete();
   }
 

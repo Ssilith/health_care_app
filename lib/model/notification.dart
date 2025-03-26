@@ -17,7 +17,7 @@ class Notification {
     required this.scheduledDate,
   });
 
-  factory Notification.fromSnaphot(DocumentSnapshot snapshot) {
+  factory Notification.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return Notification(
       id: snapshot.id,
@@ -46,7 +46,7 @@ class Notification {
       'name': name,
       'interval': interval,
       'channelId': channelId,
-      'scheduledDate': scheduledDate.toIso8601String()
+      'scheduledDate': scheduledDate.toIso8601String(),
     };
   }
 }

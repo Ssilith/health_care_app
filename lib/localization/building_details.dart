@@ -37,11 +37,12 @@ class BuildingInfo extends StatelessWidget {
             isOnTap: building.website != null,
           ),
           NavigateToContainer(
-              icon: Icons.location_on,
-              title: 'Localization',
-              mess: building.address ?? 'No address provided',
-              url:
-                  'https://www.google.com/maps/dir/?api=1&destination=${building.location.latitude},${building.location.longitude}&travelmode=driving'),
+            icon: Icons.location_on,
+            title: 'Localization',
+            mess: building.address ?? 'No address provided',
+            url:
+                'https://www.google.com/maps/dir/?api=1&destination=${building.location.latitude},${building.location.longitude}&travelmode=driving',
+          ),
         ],
       ),
     );
