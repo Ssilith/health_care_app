@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care_app/appointments/main_appointments.dart';
@@ -10,7 +8,7 @@ import 'package:health_care_app/localization/pharmacy_finder.dart';
 import 'package:health_care_app/notebook/main_notebook.dart';
 
 List<Map<String, String>> homePageActions = [
-  {'In Case of Emergency': 'assets/undraw_medical_care_movn.svg'},
+  {'In case of emergency': 'assets/undraw_medical_care_movn.svg'},
   {'Med notebook': 'assets/undraw_undraw_notebook_ask4_ew5s.svg'},
   {'Appointments': 'assets/undraw_doctors_p6aq.svg'},
   {'Chat bot': 'assets/undraw_chat_re_re1u.svg'},
@@ -20,7 +18,7 @@ List<Map<String, String>> homePageActions = [
 
 Widget getActionRoute(String actionKey) {
   switch (actionKey) {
-    case 'In Case of Emergency':
+    case 'In case of emergency':
       return const MainIce();
     case 'Med notebook':
       return const MainNotebook();
