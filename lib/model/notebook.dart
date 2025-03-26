@@ -34,14 +34,4 @@ class Notebook {
       'noteContent': noteContent,
     };
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'userId': userId,
-      'creationDate': creationDate,
-      'noteTitle': noteTitle,
-      'noteContent': noteContent,
-    };
-  }
 }

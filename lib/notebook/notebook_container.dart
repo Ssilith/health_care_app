@@ -14,11 +14,13 @@ class NotebookContainer extends StatefulWidget {
   final Repository repository;
   final Notebook note;
   final Function(String) onDelete;
+  final VoidCallback onEdit;
   const NotebookContainer({
     super.key,
     required this.repository,
     required this.note,
     required this.onDelete,
+    required this.onEdit,
   });
 
   @override
@@ -36,6 +38,19 @@ class _NotebookContainerState extends State<NotebookContainer> {
         startActionPane: ActionPane(
           motion: const StretchMotion(),
           children: [
+            IconTheme(
+              data: IconTheme.of(
+                context,
+              ).copyWith(color: Theme.of(context).focusColor),
+              child: SlidableAction(
+                borderRadius: BorderRadius.circular(10),
+                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                icon: Icons.edit,
+                label: "Edit",
+                onPressed: (_) => widget.onEdit(),
+              ),
+            ),
             IconTheme(
               data: IconTheme.of(
                 context,

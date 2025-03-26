@@ -46,7 +46,7 @@ class _MainAppointmentsState extends State<MainAppointments> {
             MaterialPageRoute(
               builder:
                   (context) => AppointmentForm(
-                    onAdd: (newAppointment) {
+                    onChange: (newAppointment) {
                       setState(() => appointments.add(newAppointment));
                     },
                   ),
@@ -170,8 +170,29 @@ class _MainAppointmentsState extends State<MainAppointments> {
                   (appointment) => Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: AppointmentContainer(
-                      appointmentMap: appointment,
+                      appointment: appointment,
                       repository: repository,
+                      onEdit: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (context) => AppointmentForm(
+                                  existingAppointment: appointment,
+                                  onChange: (changedAppointment) {
+                                    int index = appointments.indexWhere(
+                                      (element) =>
+                                          element.id == changedAppointment.id,
+                                    );
+                                    setState(
+                                      () =>
+                                          appointments[index] =
+                                              changedAppointment,
+                                    );
+                                  },
+                                ),
+                          ),
+                        );
+                      },
                       onDelete: (appointmentId) {
                         setState(() {
                           appointments.removeWhere(
@@ -253,8 +274,26 @@ class _MainAppointmentsState extends State<MainAppointments> {
           (appointment) => Padding(
             padding: const EdgeInsets.all(4.0),
             child: AppointmentContainer(
-              appointmentMap: appointment,
+              appointment: appointment,
               repository: repository,
+              onEdit: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (context) => AppointmentForm(
+                          existingAppointment: appointment,
+                          onChange: (changedAppointment) {
+                            int index = appointments.indexWhere(
+                              (element) => element.id == changedAppointment.id,
+                            );
+                            setState(
+                              () => appointments[index] = changedAppointment,
+                            );
+                          },
+                        ),
+                  ),
+                );
+              },
               onDelete: (appointmentId) {
                 setState(() {
                   appointments.removeWhere(

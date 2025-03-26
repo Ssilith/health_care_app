@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:health_care_app/global.dart';
 
 class ActionContainer extends StatelessWidget {
   final String title;
@@ -22,7 +21,6 @@ class ActionContainer extends StatelessWidget {
       child: Container(
         width: size.width * 0.45,
         decoration: BoxDecoration(
-          boxShadow: boxShadow,
           color: const Color(0xFFD9D9D9),
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           border: Border.all(

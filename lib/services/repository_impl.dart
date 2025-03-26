@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health_care_app/model/appointment.dart';
-import 'package:health_care_app/model/notification.dart';
+import 'package:health_care_app/model/ice_info.dart';
 import 'package:health_care_app/services/firebase_paths.dart';
 import 'package:health_care_app/services/repository.dart';
 
@@ -20,6 +20,17 @@ class RepositoryImpl implements Repository {
     DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
 
     return Appointment.fromSnapshot(documentSnapshot);
+  }
+
+  @override
+  Future<Appointment> editAppointment(Appointment appointment) async {
+    DocumentReference documentReference = _firestore
+        .collection(FirebasePaths.appointments)
+        .doc(appointment.id!);
+    await documentReference.update(appointment.toDTOMap(getUserId()));
+
+    DocumentSnapshot<Object?> updatedSnapshot = await documentReference.get();
+    return Appointment.fromSnapshot(updatedSnapshot);
   }
 
   @override
@@ -43,37 +54,6 @@ class RepositoryImpl implements Repository {
   }
 
   @override
-  Future<Notification> addNotification(Notification notification) async {
-    DocumentReference documentReference = await _firestore
-        .collection(FirebasePaths.notifications)
-        .add(notification.toDTOMap(getUserId()));
-
-    DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
-
-    return Notification.fromSnapshot(documentSnapshot);
-  }
-
-  @override
-  Future<List<Notification>> getNotifications() async {
-    var querySnapshot =
-        await _firestore
-            .collection(FirebasePaths.notifications)
-            .where("userId", isEqualTo: getUserId())
-            .get();
-    return querySnapshot.docs
-        .map((doc) => Notification.fromSnapshot(doc))
-        .toList();
-  }
-
-  @override
-  Future<void> deleteNotification(String id) async {
-    var questionDocRef = _firestore
-        .collection(FirebasePaths.notifications)
-        .doc(id);
-    return await questionDocRef.delete();
-  }
-
-  @override
   Future<Notebook> addNote(Notebook note) async {
     DocumentReference documentReference = await _firestore
         .collection(FirebasePaths.notes)
@@ -82,6 +62,17 @@ class RepositoryImpl implements Repository {
     DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
 
     return Notebook.fromSnapshot(documentSnapshot);
+  }
+
+  @override
+  Future<Notebook> editNote(Notebook note) async {
+    DocumentReference documentReference = _firestore
+        .collection(FirebasePaths.notes)
+        .doc(note.id!);
+    await documentReference.update(note.toDTOMap(getUserId()));
+
+    DocumentSnapshot<Object?> updatedSnapshot = await documentReference.get();
+    return Notebook.fromSnapshot(updatedSnapshot);
   }
 
   @override
@@ -97,6 +88,44 @@ class RepositoryImpl implements Repository {
   @override
   Future<void> deleteNote(String id) async {
     var questionDocRef = _firestore.collection(FirebasePaths.notes).doc(id);
+    return await questionDocRef.delete();
+  }
+
+  @override
+  Future<IceInfo> addIceInfo(IceInfo info) async {
+    DocumentReference documentReference = await _firestore
+        .collection(FirebasePaths.iceInfo)
+        .add(info.toDTOMap(getUserId()));
+
+    DocumentSnapshot<Object?> documentSnapshot = await documentReference.get();
+
+    return IceInfo.fromSnapshot(documentSnapshot);
+  }
+
+  @override
+  Future<IceInfo> editIceInfo(IceInfo info) async {
+    DocumentReference documentReference = _firestore
+        .collection(FirebasePaths.iceInfo)
+        .doc(info.id!);
+    await documentReference.update(info.toDTOMap(getUserId()));
+
+    DocumentSnapshot<Object?> updatedSnapshot = await documentReference.get();
+    return IceInfo.fromSnapshot(updatedSnapshot);
+  }
+
+  @override
+  Future<List<IceInfo>> getIceInfos() async {
+    var querySnapshot =
+        await _firestore
+            .collection(FirebasePaths.iceInfo)
+            .where("userId", isEqualTo: getUserId())
+            .get();
+    return querySnapshot.docs.map((doc) => IceInfo.fromSnapshot(doc)).toList();
+  }
+
+  @override
+  Future<void> deleteIceInfo(String id) async {
+    var questionDocRef = _firestore.collection(FirebasePaths.iceInfo).doc(id);
     return await questionDocRef.delete();
   }
 

@@ -49,7 +49,7 @@ class _MainNotebookState extends State<MainNotebook> {
                   MaterialPageRoute(
                     builder:
                         (context) => NotebookForm(
-                          onAdd: (newNote) {
+                          onChange: (newNote) {
                             setState(() => notes.add(newNote));
                           },
                         ),
@@ -101,6 +101,19 @@ class _MainNotebookState extends State<MainNotebook> {
                     child: NotebookContainer(
                       note: notes[index],
                       repository: repository,
+                      onEdit: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (context) => NotebookForm(
+                                  existingNote: notes[index],
+                                  onChange: (info) {
+                                    setState(() => notes[index] = info);
+                                  },
+                                ),
+                          ),
+                        );
+                      },
                       onDelete: (noteId) {
                         setState(() {
                           notes.removeWhere((element) => element.id == noteId);

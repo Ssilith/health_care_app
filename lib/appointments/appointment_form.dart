@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/blank_scaffold.dart';
-import 'package:health_care_app/global.dart';
 import 'package:health_care_app/model/appointment.dart';
 import 'package:health_care_app/services/repository.dart';
 import 'package:health_care_app/services/repository_impl.dart';
@@ -14,8 +13,13 @@ import 'package:health_care_app/widgets/text_input_form.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentForm extends StatefulWidget {
-  final Function(Appointment) onAdd;
-  const AppointmentForm({super.key, required this.onAdd});
+  final Appointment? existingAppointment;
+  final Function(Appointment) onChange;
+  const AppointmentForm({
+    super.key,
+    required this.onChange,
+    this.existingAppointment,
+  });
 
   @override
   State<AppointmentForm> createState() => _AppointmentFormState();
@@ -27,8 +31,22 @@ class _AppointmentFormState extends State<AppointmentForm> {
   TextEditingController doctorName = TextEditingController();
   TextEditingController location = TextEditingController();
   TextEditingController purpose = TextEditingController();
+
   final Repository repository = RepositoryImpl();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    if (widget.existingAppointment != null) {
+      final appointment = widget.existingAppointment!;
+      date.text = DateFormat('yyyy-MM-dd h:mm a').format(appointment.date);
+      doctorType.text = appointment.doctorType;
+      doctorName.text = appointment.doctorName;
+      location.text = appointment.location;
+      purpose.text = appointment.purpose ?? "";
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +75,7 @@ class _AppointmentFormState extends State<AppointmentForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextInputForm(
-                  width: size.width * 0.9 - 50,
+                  width: size.width * 0.9 - 45,
                   hint: "Date",
                   controller: date,
                 ),
@@ -66,7 +84,6 @@ class _AppointmentFormState extends State<AppointmentForm> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Theme.of(context).primaryColor,
-                    boxShadow: boxShadow,
                   ),
                   child: IconButton(
                     onPressed: () async => await selectDateTime(context, date),
@@ -118,21 +135,25 @@ class _AppointmentFormState extends State<AppointmentForm> {
                     setState(() => isLoading = true);
                     final format = DateFormat('yyyy-MM-dd h:mm a');
                     Appointment appointment = Appointment(
+                      id: widget.existingAppointment?.id,
+                      userId: widget.existingAppointment?.userId,
                       date: format.parse(date.text),
                       doctorType: doctorType.text,
                       doctorName: doctorName.text,
                       location: location.text,
                       purpose: purpose.text.isEmpty ? "" : purpose.text,
                     );
-                    Appointment addedAppointment = await repository
-                        .addAppointment(appointment);
-                    widget.onAdd(addedAppointment);
+                    Appointment addedAppointment =
+                        widget.existingAppointment != null
+                            ? await repository.editAppointment(appointment)
+                            : await repository.addAppointment(appointment);
+                    widget.onChange(addedAppointment);
                     setState(() => isLoading = false);
                     Navigator.of(context).pop();
                   } catch (e) {
                     setState(() => isLoading = false);
                     displayErrorMotionToast(
-                      'Failed to add appointment.',
+                      'Failed to ${widget.existingAppointment != null ? "edit" : "add"} appointment.',
                       context,
                     );
                   }

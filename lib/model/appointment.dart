@@ -42,16 +42,4 @@ class Appointment {
       'purpose': purpose,
     };
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'userId': userId,
-      'date': date.toIso8601String(),
-      'doctorType': doctorType,
-      'doctorName': doctorName,
-      'location': location,
-      'purpose': purpose,
-    };
-  }
 }

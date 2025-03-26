@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care_app/appointments/main_appointments.dart';
 import 'package:health_care_app/chat/chat_page.dart';
+import 'package:health_care_app/ice/main_ice.dart';
 import 'package:health_care_app/localization/hospital_finder.dart';
 import 'package:health_care_app/localization/pharmacy_finder.dart';
 import 'package:health_care_app/notebook/main_notebook.dart';
-import 'package:health_care_app/notifications/main_notifications.dart';
 
 List<Map<String, String>> homePageActions = [
-  {'Pill notifications': 'assets/undraw_medical_care_movn.svg'},
+  {'In Case of Emergency': 'assets/undraw_medical_care_movn.svg'},
   {'Med notebook': 'assets/undraw_undraw_notebook_ask4_ew5s.svg'},
   {'Appointments': 'assets/undraw_doctors_p6aq.svg'},
   {'Chat bot': 'assets/undraw_chat_re_re1u.svg'},
@@ -20,8 +20,8 @@ List<Map<String, String>> homePageActions = [
 
 Widget getActionRoute(String actionKey) {
   switch (actionKey) {
-    case 'Pill notifications':
-      return const MainNotifications();
+    case 'In Case of Emergency':
+      return const MainIce();
     case 'Med notebook':
       return const MainNotebook();
     case 'Appointments':
@@ -35,15 +35,6 @@ Widget getActionRoute(String actionKey) {
   }
   return const SizedBox.shrink();
 }
-
-List<BoxShadow> boxShadow = [
-  const BoxShadow(
-    color: Colors.grey,
-    blurRadius: 2.0,
-    spreadRadius: 0.0,
-    offset: Offset(0.0, 4.0),
-  ),
-];
 
 copyToClipboard(String text) {
   Clipboard.setData(ClipboardData(text: text));

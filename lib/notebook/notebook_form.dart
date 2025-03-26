@@ -11,8 +11,9 @@ import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
 
 class NotebookForm extends StatefulWidget {
-  final Function(Notebook) onAdd;
-  const NotebookForm({super.key, required this.onAdd});
+  final Notebook? existingNote;
+  final Function(Notebook) onChange;
+  const NotebookForm({super.key, required this.onChange, this.existingNote});
 
   @override
   State<NotebookForm> createState() => _NotebookFormState();
@@ -21,8 +22,19 @@ class NotebookForm extends StatefulWidget {
 class _NotebookFormState extends State<NotebookForm> {
   final TextEditingController title = TextEditingController();
   final TextEditingController content = TextEditingController();
+
   final Repository repository = RepositoryImpl();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    if (widget.existingNote != null) {
+      final note = widget.existingNote!;
+      title.text = note.noteTitle;
+      content.text = note.noteContent;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,19 +86,26 @@ class _NotebookFormState extends State<NotebookForm> {
                   try {
                     setState(() => isLoading = true);
                     Notebook newNote = Notebook(
-                      creationDate: DateTime.now().toString(),
+                      id: widget.existingNote?.id,
+                      userId: widget.existingNote?.userId,
+                      creationDate:
+                          widget.existingNote?.creationDate ??
+                          DateTime.now().toString(),
                       noteTitle: title.text.trim(),
                       noteContent: content.text.trim(),
                     );
 
-                    Notebook addedNote = await repository.addNote(newNote);
-                    widget.onAdd(addedNote);
+                    Notebook addedNote =
+                        widget.existingNote != null
+                            ? await repository.editNote(newNote)
+                            : await repository.addNote(newNote);
+                    widget.onChange(addedNote);
                     setState(() => isLoading = false);
                     Navigator.of(context).pop();
                   } catch (e) {
                     setState(() => isLoading = false);
                     displayErrorMotionToast(
-                      'Failed to add appointment.',
+                      'Failed to ${widget.existingNote != null ? "edit" : "add"} appointment.',
                       context,
                     );
                   }

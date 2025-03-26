@@ -29,8 +29,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # notifications
-  flutter_local_notifications: ^19.0.0
+  intl: ^0.19.0
 
   # location
   location: ^7.0.0
@@ -64,7 +63,6 @@ dependencies:
   cloud_firestore: ^5.6.5
   firebase_core: ^3.12.1
   firebase_auth: ^5.5.1
-  intl: ^0.19.0
 
   # mobile
   flutter_native_splash: ^2.4.5

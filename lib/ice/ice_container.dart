@@ -2,22 +2,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:health_care_app/model/appointment.dart';
+import 'package:health_care_app/model/ice_info.dart';
 import 'package:health_care_app/services/repository.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/popup_window.dart';
-import 'package:intl/intl.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class AppointmentContainer extends StatelessWidget {
-  final Appointment appointment;
+class IceContainer extends StatelessWidget {
   final Repository repository;
+  final IceInfo info;
   final Function(String) onDelete;
   final VoidCallback onEdit;
-  const AppointmentContainer({
+  const IceContainer({
     super.key,
-    required this.appointment,
     required this.repository,
+    required this.info,
     required this.onDelete,
     required this.onEdit,
   });
@@ -60,19 +58,16 @@ class AppointmentContainer extends StatelessWidget {
                       content: Builder(
                         builder: (context) {
                           return PopupWindow(
-                            title: "Delete appointment",
-                            message:
-                                "Do you really want to delete this appointment?",
+                            title: "Delete info",
+                            message: "Do you really want to delete this info?",
                             onPressed: () async {
                               try {
-                                await repository.deleteAppointment(
-                                  appointment.id ?? "",
-                                );
-                                onDelete(appointment.id ?? "");
+                                await repository.deleteIceInfo(info.id ?? "");
+                                onDelete(info.id ?? "");
                                 Navigator.of(context).pop();
                               } catch (e) {
                                 displayErrorMotionToast(
-                                  'Failed to delete appointment.',
+                                  'Failed to delete info.',
                                   context,
                                 );
                               }
@@ -102,91 +97,107 @@ class AppointmentContainer extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                appointment.doctorType,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                info.fullName,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                 ),
               ),
-              ContainerRow(
-                title: appointment.doctorName,
-                iconData: Icons.person,
-                textMaxLines: 1,
+              const SizedBox(height: 5),
+              buildInfoRow("Birth Date", info.birthDate, Icons.cake, context),
+              buildInfoRow(
+                "Gender",
+                info.gender,
+                Icons.person_outline,
+                context,
               ),
-              ContainerRow(
-                title: DateFormat('h:mm a').format(appointment.date),
-                iconData: MdiIcons.clock,
-                iconSize: 20,
-                textMaxLines: 1,
+              buildInfoRow(
+                "Blood Type",
+                info.bloodType,
+                Icons.bloodtype,
+                context,
               ),
-              ContainerRow(
-                title: appointment.location,
-                iconData: Icons.location_pin,
+              buildInfoRow(
+                "Allergies",
+                info.allergies,
+                Icons.warning_amber,
+                context,
               ),
-              appointment.purpose != null && appointment.purpose != ""
-                  ? Row(
-                    children: [
-                      Center(
-                        child: Icon(
-                          Icons.description,
-                          size: 20,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Expanded(child: Text(appointment.purpose!)),
-                    ],
-                  )
-                  : const SizedBox.shrink(),
+              buildInfoRow(
+                "Medical Conditions",
+                info.medicalConditions,
+                Icons.healing,
+                context,
+              ),
+              buildInfoRow(
+                "Medications",
+                info.medications,
+                Icons.medication,
+                context,
+              ),
+              buildInfoRow(
+                "Contact Name",
+                info.emergencyContactName,
+                Icons.contact_phone,
+                context,
+              ),
+              buildInfoRow(
+                "Phone",
+                info.emergencyContactNumber,
+                Icons.phone,
+                context,
+              ),
+              buildInfoRow("Relation", info.relation, Icons.people, context),
+              buildInfoRow(
+                "Insurance",
+                info.insuranceProvider,
+                Icons.shield,
+                context,
+              ),
+              buildInfoRow(
+                "Policy #",
+                info.insuranceNumber,
+                Icons.description,
+                context,
+              ),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class ContainerRow extends StatelessWidget {
-  final String title;
-  final IconData iconData;
-  final double iconSize;
-  final int textMaxLines;
-  const ContainerRow({
-    super.key,
-    required this.title,
-    required this.iconData,
-    this.iconSize = 22,
-    this.textMaxLines = 2,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Center(
-          child: Icon(
-            iconData,
-            size: iconSize,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        if (textMaxLines != 2) const SizedBox(width: 5),
-        Expanded(
-          child: Text(
-            title,
-            maxLines: textMaxLines,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+  Widget buildInfoRow(
+    String label,
+    String? value,
+    IconData icon,
+    BuildContext context,
+  ) {
+    if (value == null || value.trim().isEmpty) return SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(color: Colors.black, fontSize: 16),
+                children: [
+                  TextSpan(
+                    text: "$label: ",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(text: value),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
