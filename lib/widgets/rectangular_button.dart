@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/widgets/loading.dart';
 
-class LoginButton extends StatelessWidget {
+class RectangularButton extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
   final bool isLoading;
-  const LoginButton({
+  const RectangularButton({
     super.key,
     required this.title,
     required this.onPressed,

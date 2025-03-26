@@ -1,25 +1,29 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:health_care_app/api/chat_gpt.dart';
 import 'package:health_care_app/blank_scaffold.dart';
+import 'package:health_care_app/model/notebook.dart';
+import 'package:health_care_app/services/repository.dart';
+import 'package:health_care_app/services/repository_impl.dart';
 import 'package:health_care_app/widgets/message.dart';
-import 'package:health_care_app/widgets/simple_button.dart';
+import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'dart:io';
 
 class InsertPdfPage extends StatefulWidget {
-  final Function(String) response;
-  const InsertPdfPage({super.key, required this.response});
+  final Function(Notebook) onAdd;
+  const InsertPdfPage({super.key, required this.onAdd});
 
   @override
   State<InsertPdfPage> createState() => _InsertPdfPageState();
 }
 
 class _InsertPdfPageState extends State<InsertPdfPage> {
+  final Repository repository = RepositoryImpl();
   bool isLoading = false;
 
   Future readPDF() async {
@@ -28,75 +32,85 @@ class _InsertPdfPageState extends State<InsertPdfPage> {
       allowedExtensions: ['pdf'],
     );
     if (result != null) {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
 
       PlatformFile file = result.files.first;
 
-      final PdfDocument document =
-          PdfDocument(inputBytes: File(file.path!).readAsBytesSync());
+      Uint8List? fileBytes = file.bytes;
+      if (fileBytes == null && file.path != null) {
+        fileBytes = File(file.path!).readAsBytesSync();
+      }
 
-      // final PdfDocument document =
-      //     PdfDocument(inputBytes: await readDocumentData('report.pdf'));
+      if (fileBytes == null) {
+        setState(() => isLoading = false);
+        displayErrorMotionToast('Failed to load file bytes.', context);
+        return;
+      }
+
+      final PdfDocument document = PdfDocument(inputBytes: fileBytes);
 
       PdfTextExtractor extractor = PdfTextExtractor(document);
       String text = extractor.extractText(layoutText: true);
       String response = await fetchChatGPTResponse(text, context);
 
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
 
-      Navigator.of(context).pop();
-
-      widget.response(response);
+      if (response != "") {
+        Notebook newNote = Notebook(
+          creationDate: DateTime.now().toString(),
+          noteTitle: "Chat GPT Note",
+          noteContent: response.trim(),
+        );
+        Notebook addedNote = await repository.addNote(newNote);
+        widget.onAdd(addedNote);
+        Navigator.of(context).pop();
+      }
 
       document.dispose();
     } else {
+      setState(() => isLoading = false);
       displayErrorMotionToast('Failed to load file.', context);
     }
-  }
-
-  Future<List<int>> readDocumentData(String name) async {
-    final ByteData data = await rootBundle.load('assets/$name');
-    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return BlankScaffold(
-        body: SizedBox(
-            width: size.width,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                      height: MediaQuery.of(context).viewInsets.bottom == 0
-                          ? size.height * 0.2
-                          : 20),
-                  SvgPicture.asset(
-                    'assets/undraw_attached_file_re_0n9b.svg',
-                    height: size.height * 0.25,
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Attach PDF File',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  if (!isLoading)
-                    SimpleButton(
-                      title: "Choose a file",
-                      onPressed: readPDF,
-                      width: 150,
-                    )
-                  else
-                    const CircularProgressIndicator()
-                ],
+      body: SizedBox(
+        width: size.width,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height:
+                    MediaQuery.of(context).viewInsets.bottom == 0
+                        ? size.height * 0.2
+                        : 20,
               ),
-            )));
+              SvgPicture.asset(
+                'assets/photos/attach.svg',
+                height: size.height * 0.25,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Attach PDF File',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(
+                width: 300,
+                child: RectangularButton(
+                  title: "Choose a file",
+                  isLoading: isLoading,
+                  onPressed: () async => await readPDF(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

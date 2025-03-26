@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/auth/form_container.dart';
-import 'package:health_care_app/auth/login_button.dart';
+import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
 
@@ -58,7 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
           iconData: Icons.lock,
         ),
         const SizedBox(height: 15),
-        LoginButton(
+        RectangularButton(
           title: "SIGN UP",
           isLoading: isLoading,
           onPressed: () async {

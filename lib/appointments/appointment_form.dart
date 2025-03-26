@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:health_care_app/auth/login_button.dart';
+import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/global.dart';
 import 'package:health_care_app/model/appointment.dart';
@@ -102,7 +102,7 @@ class _AppointmentFormState extends State<AppointmentForm> {
             const SizedBox(height: 10),
             SizedBox(
               width: 300,
-              child: LoginButton(
+              child: RectangularButton(
                 title: 'SUBMIT',
                 isLoading: isLoading,
                 onPressed: () async {

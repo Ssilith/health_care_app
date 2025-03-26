@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/auth/form_container.dart';
-import 'package:health_care_app/auth/login_button.dart';
+import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/main.dart';
 import 'package:health_care_app/widgets/input_dialog.dart';
 import 'package:health_care_app/widgets/message.dart';
@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
           iconData: Icons.lock,
         ),
         const SizedBox(height: 15),
-        LoginButton(
+        RectangularButton(
           title: "LOGIN",
           isLoading: isLoading,
           onPressed: () async {
@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                   title: 'Forgot your password? Don\'t worry!',
                   hint: 'E-mail',
                   iconData: Icons.person,
-                  button: LoginButton(
+                  button: RectangularButton(
                     title: "Confirm",
                     isLoading: isLoading,
                     onPressed: () async {

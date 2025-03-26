@@ -6,6 +6,7 @@ class TextInputForm extends StatefulWidget {
   final TextEditingController controller;
   final bool hideText;
   final IconData? iconData;
+  final int maxLines;
   const TextInputForm({
     super.key,
     required this.width,
@@ -13,6 +14,7 @@ class TextInputForm extends StatefulWidget {
     required this.controller,
     this.hideText = false,
     this.iconData,
+    this.maxLines = 1,
   });
 
   @override
@@ -30,13 +32,13 @@ class _TextInputFormState extends State<TextInputForm> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
-      height: 50,
       child: Stack(
         alignment: Alignment.centerRight,
         children: [
           TextField(
             obscureText: widget.hideText ? _obscured : false,
             controller: widget.controller,
+            maxLines: widget.maxLines,
             decoration: InputDecoration(
               prefixIcon:
                   widget.iconData == null ? null : Icon(widget.iconData),

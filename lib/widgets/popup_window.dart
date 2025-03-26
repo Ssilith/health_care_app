@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/auth/login_button.dart';
+import 'package:health_care_app/widgets/rectangular_button.dart';
 
 class PopupWindow extends StatelessWidget {
   final String title;
@@ -47,7 +47,7 @@ class PopupWindow extends StatelessWidget {
             children: [
               SizedBox(
                 width: 120,
-                child: LoginButton(
+                child: RectangularButton(
                   onPressed: () => Navigator.of(context).pop(),
                   isLoading: false,
                   title: "Cancel",
@@ -56,7 +56,7 @@ class PopupWindow extends StatelessWidget {
               const SizedBox(width: 5),
               SizedBox(
                 width: 120,
-                child: LoginButton(
+                child: RectangularButton(
                   onPressed: onPressed,
                   isLoading: false,
                   title: "Confirm",
