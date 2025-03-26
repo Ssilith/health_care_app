@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/global.dart';
 import 'package:mesh_gradient/mesh_gradient.dart';
 
 class BlankScaffold extends StatefulWidget {
@@ -61,17 +60,16 @@ class _BlankScaffoldState extends State<BlankScaffold>
               options: MeshGradientOptions(blend: 3.5, noiseIntensity: 0.5),
             ),
           ),
-          widget.body,
+          Positioned.fill(child: widget.body),
           if (widget.showLeading)
             Positioned(
-              top: 50,
+              top: 30,
               left: 15,
               child: IconButton(
                 icon: Ink(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.white,
-                    boxShadow: boxShadow,
                   ),
                   child: Icon(
                     Icons.arrow_back,

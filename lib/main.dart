@@ -1,7 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:health_care_app/auth/login_page_template.dart';
 import 'package:health_care_app/firebase_options.dart';
 import 'package:health_care_app/global.dart';
@@ -12,9 +16,11 @@ import 'package:health_care_app/widgets/search_bar_container.dart';
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  // await Future.delayed(const Duration(seconds: 1));
-  // FlutterNativeSplash.remove();
+  if (!kIsWeb) {
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+    await Future.delayed(const Duration(seconds: 1));
+    FlutterNativeSplash.remove();
+  }
   runApp(const MyApp());
 }
 
@@ -96,7 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset('logo.png', height: size.height * 0.2),
           SizedBox(
             width: size.width,
             child: SingleChildScrollView(

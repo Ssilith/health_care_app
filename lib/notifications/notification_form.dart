@@ -33,39 +33,46 @@ class _NotificationFormState extends State<NotificationForm> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return BlankScaffold(
-        body: SingleChildScrollView(
-      child: SizedBox(
-        width: size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-                height: MediaQuery.of(context).viewInsets.bottom == 0
-                    ? size.height * 0.2
-                    : 20),
-            SvgPicture.asset(
-              'assets/undraw_my_notifications_re_ehmk.svg',
-              height: size.height * 0.25,
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'New Notification Form',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 10),
-            TextInputForm(
-                width: size.width * 0.9, hint: 'Name', controller: name),
-            const SizedBox(height: 5),
-            SizedBox(
-              width: size.width * 0.9,
-              child: NotificationPicker(
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: size.width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height:
+                    MediaQuery.of(context).viewInsets.bottom == 0
+                        ? size.height * 0.2
+                        : 20,
+              ),
+              SvgPicture.asset(
+                'assets/photos/notifications.svg',
+                height: size.height * 0.25,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'New Notification Form',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              TextInputForm(
+                width: size.width * 0.9,
+                hint: 'Name',
+                controller: name,
+              ),
+              const SizedBox(height: 5),
+              SizedBox(
+                width: size.width * 0.9,
+                child: NotificationPicker(
                   selectedValue: schedule,
-                  returnSchedule: (newSchedule) => setState(() {
+                  returnSchedule:
+                      (newSchedule) => setState(() {
                         schedule = newSchedule;
-                      })),
-            ),
-            const SizedBox(height: 10),
-            SimpleButton(
+                      }),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SimpleButton(
                 title: 'Submit',
                 textColor: Colors.black,
                 onPressed: () async {
@@ -75,10 +82,11 @@ class _NotificationFormState extends State<NotificationForm> {
 
                     notificationmodel.Notification notification =
                         notificationmodel.Notification(
-                            name: name.text,
-                            interval: schedule.toString(),
-                            channelId: channelId,
-                            scheduledDate: format.parse(formatDate(format)));
+                          name: name.text,
+                          interval: schedule.toString(),
+                          channelId: channelId,
+                          scheduledDate: format.parse(formatDate(format)),
+                        );
                     notificationmodel.Notification addedNotification =
                         await repository.addNotification(notification);
                     widget.onAdd(addedNotification);
@@ -86,17 +94,24 @@ class _NotificationFormState extends State<NotificationForm> {
                     Navigator.of(context).pop();
                   } catch (e) {
                     displayErrorMotionToast(
-                        'Failed to schedule appointment.', context);
+                      'Failed to schedule appointment.',
+                      context,
+                    );
                   }
-                }),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   setCyclicNotifications(
-      NotificationSchedule schedule, String name, int id) async {
+    NotificationSchedule schedule,
+    String name,
+    int id,
+  ) async {
     await notificationService.scheduleNotification(schedule, name, id);
   }
 }

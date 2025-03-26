@@ -39,64 +39,70 @@ class _MainAppointmentsState extends State<MainAppointments> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return BlankScaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => AppointmentForm(
-                      onAdd: (newAppointment) {
-                        setState(() {
-                          appointments.add(newAppointment);
-                        });
-                      },
-                    )));
-          },
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add),
-        ),
-        body: FutureBuilder(
-            future: getAppointments,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return const Center(
-                    child: Text('An error occured. Please try again later.'));
-              } else if (snapshot.data!.isEmpty) {
-                return const Center(child: Text('No transaction found.'));
-              } else {
-                appointments = snapshot.data;
-
-                return SizedBox(
-                  width: size.width,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 110),
-                        SizedBox(
-                          width: size.width * 0.9,
-                          child: MainSwitch(
-                            current: isCalendarView,
-                            firstTitle: 'CHANGE TO CALENDAR',
-                            secondTitle: 'CHANGE TO LIST',
-                            firstIconData: Icons.list,
-                            secondIconData: Icons.calendar_month,
-                            onChanged: (value) => setState(
-                              () => isCalendarView = value,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        isCalendarView
-                            ? buildCalendar(appointments)
-                            : buildListView(appointments),
-                      ],
-                    ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => AppointmentForm(
+                    onAdd: (newAppointment) {
+                      setState(() => appointments.add(newAppointment));
+                    },
                   ),
-                );
-              }
-            }));
+            ),
+          );
+        },
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: FutureBuilder(
+        future: getAppointments,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(
+              child: Text('An error occurred. Please try again later.'),
+            );
+          } else {
+            appointments = snapshot.data ?? [];
+            if (appointments.isEmpty) {
+              return const Center(child: Text('No appointments found.'));
+            }
+
+            return SizedBox(
+              width: size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 110),
+                    SizedBox(
+                      width: size.width * 0.9,
+                      child: MainSwitch(
+                        current: isCalendarView,
+                        firstTitle: 'CHANGE TO CALENDAR',
+                        secondTitle: 'CHANGE TO LIST',
+                        firstIconData: Icons.list,
+                        secondIconData: Icons.calendar_month,
+                        onChanged:
+                            (value) => setState(() => isCalendarView = value),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    isCalendarView
+                        ? buildCalendar(appointments)
+                        : buildListView(appointments),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 
   List mapAppointmentsToDay(List<Appointment> appointments, DateTime day) {
@@ -129,10 +135,12 @@ class _MainAppointmentsState extends State<MainAppointments> {
   }
 
   Widget buildListView(List<Appointment> appointments) {
-    groupedAfterDayAppointments =
-        groupAppointmentsByDate(mapAppointmentsAfterDay(appointments));
-    selectedAfterDayAppointments =
-        sortAppointmentsByDate(groupedAfterDayAppointments);
+    groupedAfterDayAppointments = groupAppointmentsByDate(
+      mapAppointmentsAfterDay(appointments),
+    );
+    selectedAfterDayAppointments = sortAppointmentsByDate(
+      groupedAfterDayAppointments,
+    );
 
     return ListView.builder(
       padding: EdgeInsets.zero,
@@ -147,28 +155,33 @@ class _MainAppointmentsState extends State<MainAppointments> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                DateFormat('dd MMMM yyyy').format(
-                    DateTime.parse(selectedAfterDayAppointments[index])),
+                DateFormat(
+                  'dd MMMM yyyy',
+                ).format(DateTime.parse(selectedAfterDayAppointments[index])),
                 style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
               ),
             ),
             ...groupedAfterDayAppointments[selectedAfterDayAppointments[index]]!
-                .map((appointment) => Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: AppointnentContainer(
-                        appointmentMap: appointment,
-                        repository: repository,
-                        onDelete: (appointmentId) {
-                          setState(() {
-                            appointments.removeWhere(
-                                (element) => element.id == appointmentId);
-                          });
-                        },
-                      ),
-                    ))
+                .map(
+                  (appointment) => Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: AppointmentContainer(
+                      appointmentMap: appointment,
+                      repository: repository,
+                      onDelete: (appointmentId) {
+                        setState(() {
+                          appointments.removeWhere(
+                            (element) => element.id == appointmentId,
+                          );
+                        });
+                      },
+                    ),
+                  ),
+                )
                 .toList(),
           ],
         );
@@ -205,7 +218,7 @@ class _MainAppointmentsState extends State<MainAppointments> {
           calendarStyle: CalendarStyle(
             isTodayHighlighted: true,
             todayDecoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             outsideDaysVisible: false,
@@ -225,8 +238,9 @@ class _MainAppointmentsState extends State<MainAppointments> {
                   margin: const EdgeInsets.all(4.0),
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 38, 174, 108),
-                      shape: BoxShape.circle),
+                    color: Color.fromARGB(255, 22, 13, 71),
+                    shape: BoxShape.circle,
+                  ),
                   width: 8.0,
                   height: 8.0,
                 );
@@ -235,21 +249,22 @@ class _MainAppointmentsState extends State<MainAppointments> {
             },
           ),
         ),
-        ...selectedDayAppointments
-            .map((appointment) => Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: AppointnentContainer(
-                    appointmentMap: appointment,
-                    repository: repository,
-                    onDelete: (appointmentId) {
-                      setState(() {
-                        appointments.removeWhere(
-                            (element) => element.id == appointmentId);
-                      });
-                    },
-                  ),
-                ))
-            .toList()
+        ...selectedDayAppointments.map(
+          (appointment) => Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: AppointmentContainer(
+              appointmentMap: appointment,
+              repository: repository,
+              onDelete: (appointmentId) {
+                setState(() {
+                  appointments.removeWhere(
+                    (element) => element.id == appointmentId,
+                  );
+                });
+              },
+            ),
+          ),
+        ),
       ],
     );
   }

@@ -4,7 +4,7 @@ import 'package:health_care_app/model/notebook.dart';
 class NoteDetailPage extends StatelessWidget {
   final Notebook note;
 
-  const NoteDetailPage({Key? key, required this.note}) : super(key: key);
+  const NoteDetailPage({super.key, required this.note});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +17,10 @@ class NoteDetailPage extends StatelessWidget {
           children: [
             Text(
               note.noteTitle,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            Text(
-              note.noteContent,
-              style: const TextStyle(fontSize: 18),
-            ),
+            Text(note.noteContent, style: const TextStyle(fontSize: 18)),
           ],
         ),
       ),

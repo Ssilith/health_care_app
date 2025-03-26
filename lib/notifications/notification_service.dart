@@ -6,7 +6,7 @@ enum NotificationSchedule { everyDay, everyWeek, everyMinute }
 class NotificationConstants {
   static const String channelID = '6526d64c2c8db4930827e46a';
   static const String channelName = 'healthCareApp';
-  static const String channelDescription = 'healthCareAppNotif';
+  static const String channelDescription = 'healthCareAppNotify';
 }
 
 const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -56,7 +56,6 @@ class NotificationService {
             ),
           );
     }
-    // iOS permissions (already configured in initializationSettingsIOS)
   }
 
   // schedule notification by interval
@@ -73,8 +72,8 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.periodicallyShow(
       channelId,
-      'Przypomnenie o lekach!',
-      'Pamiętaj o wzięciu leku $name.',
+      'Medication reminder!',
+      'Remember to take the medicine $name.',
       interval,
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -86,7 +85,7 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  // cancel notificaion by channelId
+  // cancel notification by channelId
   cancelOneNotification(int channelId) async {
     await flutterLocalNotificationsPlugin.cancel(channelId);
   }
@@ -101,7 +100,7 @@ class NotificationService {
     return await flutterLocalNotificationsPlugin.getActiveNotifications();
   }
 
-  // show nofication now (usually triggered by sth)
+  // show notification now (usually triggered by sth)
   showNotification({
     required String title,
     required String body,

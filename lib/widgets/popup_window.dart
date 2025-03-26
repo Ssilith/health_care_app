@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/widgets/simple_button.dart';
+import 'package:health_care_app/auth/login_button.dart';
 
 class PopupWindow extends StatelessWidget {
   final String title;
@@ -14,43 +14,53 @@ class PopupWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      elevation: 0,
-      title: Text(
-        title,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.w500,
-          height: 0.5,
-          color: Colors.black,
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(10),
       ),
-      backgroundColor: const Color.fromARGB(249, 243, 246, 254),
-      content: Column(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18, color: Colors.black),
+            style: const TextStyle(fontSize: 18, color: Colors.white),
           ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SimpleButton(
-                onPressed: () => Navigator.of(context).pop(),
-                title: "Cancel",
-                textColor: const Color.fromARGB(249, 243, 246, 254),
+              SizedBox(
                 width: 120,
+                child: LoginButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  isLoading: false,
+                  title: "Cancel",
+                ),
               ),
               const SizedBox(width: 5),
-              SimpleButton(
-                textColor: const Color.fromARGB(249, 243, 246, 254),
-                onPressed: onPressed,
-                title: "Confirm",
+              SizedBox(
                 width: 120,
+                child: LoginButton(
+                  onPressed: onPressed,
+                  isLoading: false,
+                  title: "Confirm",
+                ),
               ),
             ],
           ),

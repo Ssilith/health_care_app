@@ -35,26 +35,25 @@ class _MainSwitchState extends State<MainSwitch> {
   Widget build(BuildContext context) {
     return AnimatedToggleSwitch<bool>.dual(
       current: current,
+      style: ToggleStyle(
+        backgroundColor: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(10),
+        borderColor: Theme.of(context).colorScheme.primary,
+        indicatorColor: Theme.of(context).colorScheme.primary,
+      ),
       first: true,
       second: false,
-      // borderColor: Colors.black,
-      // borderRadius: BorderRadius.circular(5),
       borderWidth: 1,
       height: 40,
-      // indicatorBorderRadius: BorderRadius.circular(0),
       onChanged: (b) {
-        setState(() {
-          current = b;
-        });
+        setState(() => current = b);
         widget.onChanged(current);
       },
       onTap: (c) {
-        setState(() {
-          current = !current;
-        });
+        setState(() => current = !current);
         widget.onChanged(current);
       },
-      // colorBuilder: (b) => Theme.of(context).primaryColor,
+
       iconBuilder:
           (value) =>
               !value

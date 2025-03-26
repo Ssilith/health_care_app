@@ -104,9 +104,9 @@ class _BuildingFinderState extends State<BuildingFinder> {
                                       (BuildContext context) =>
                                           BuildingInfo(building: building),
                                 ),
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.location_pin,
-                              color: Colors.green,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
