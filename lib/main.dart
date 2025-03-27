@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:health_care_app/auth/login_page_template.dart';
+import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/firebase_options.dart';
 import 'package:health_care_app/global.dart';
 import 'package:health_care_app/widgets/action_container.dart';
@@ -59,7 +61,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController searchController = TextEditingController();
-  List<Map<String, String>> filteredActions = [];
+  List<Map<String, IconData>> filteredActions = [];
 
   @override
   void initState() {
@@ -96,104 +98,87 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return BlankScaffold(
+      showLeading: false,
       body: Stack(
         children: [
-          SizedBox(
-            width: size.width,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(height: size.height * 0.2),
-                      IconButton(
-                        icon: const Icon(Icons.logout),
-                        onPressed: () async {
-                          try {
-                            await FirebaseAuth.instance.signOut();
-
-                            User? user = FirebaseAuth.instance.currentUser;
-
-                            if (user == null) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => const LoginPageTemplate(),
-                                ),
-                                (route) => false,
-                              );
-                            } else {
-                              displayErrorMotionToast(
-                                'Failed to log out.',
-                                context,
-                              );
-                            }
-                          } catch (e) {
-                            displayErrorMotionToast(
-                              'Failed to log out.',
-                              context,
-                            );
-                          }
-                        },
-                      ),
-                    ],
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 90,
+                    left: 10,
+                    right: 10,
+                    bottom: 10,
                   ),
-                  SizedBox(height: size.height * 0.05),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Welcome in Health Care App',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        'What are you looking for?',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: SearchBarContainer(search: searchController),
-                  ),
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    childAspectRatio: 1.1,
-                    physics: const NeverScrollableScrollPhysics(),
+                  child: SearchBarContainer(search: searchController),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: StaggeredGrid.extent(
+                    maxCrossAxisExtent: 750,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
                     children:
                         filteredActions.map((action) {
                           String title = action.keys.first;
-                          return Center(
-                            child: ActionContainer(
-                              title: title,
-                              assetUrl: action[title]!,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => getActionRoute(title),
-                                  ),
-                                );
-                              },
-                            ),
+                          return ActionContainer(
+                            title: title,
+                            iconData: action[title]!,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => getActionRoute(title),
+                                ),
+                              );
+                            },
                           );
                         }).toList(),
                   ),
-                  const SizedBox(height: 10),
-                ],
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 30,
+            right: 15,
+            child: IconButton(
+              icon: Ink(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.logout_outlined,
+                    size: 32,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
               ),
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+
+                  User? user = FirebaseAuth.instance.currentUser;
+
+                  if (user == null) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPageTemplate(),
+                      ),
+                      (route) => false,
+                    );
+                  } else {
+                    displayErrorMotionToast('Failed to log out.', context);
+                  }
+                } catch (e) {
+                  displayErrorMotionToast('Failed to log out.', context);
+                }
+              },
             ),
           ),
         ],

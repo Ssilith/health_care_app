@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:health_care_app/blank_scaffold.dart';
@@ -88,11 +89,10 @@ class _IceFormState extends State<IceForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextInputForm(
-                  width: size.width * 0.9 - 45,
+                  width: size.width * 0.9 - (kIsWeb ? 40 : 48),
                   hint: "Birth Date",
                   controller: birthDate,
                 ),
-                const SizedBox(width: 5),
                 Ink(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,

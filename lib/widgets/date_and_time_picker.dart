@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/global.dart';
 import 'package:intl/intl.dart';
 
 selectDateTime(BuildContext context, TextEditingController controller) async {
@@ -8,36 +7,12 @@ selectDateTime(BuildContext context, TextEditingController controller) async {
     initialDate: DateTime.now(),
     firstDate: DateTime(2000),
     lastDate: DateTime(2100),
-    builder: (context, child) {
-      return Theme(
-        data: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: getMaterialColor(
-              Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ),
-        child: child!,
-      );
-    },
   );
 
   if (pickedDate != null) {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: getMaterialColor(
-                Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (pickedTime != null) {
@@ -63,16 +38,6 @@ selectDate(BuildContext context, TextEditingController controller) async {
     initialDate: DateTime.now(),
     firstDate: DateTime(2000),
     lastDate: DateTime(2100),
-    builder: (context, child) {
-      return Theme(
-        data: ThemeData.light().copyWith(
-          colorScheme: ColorScheme.light(
-            primary: Theme.of(context).primaryColor,
-          ),
-        ),
-        child: child!,
-      );
-    },
   );
 
   if (pickedDate != null) {
