@@ -31,15 +31,16 @@ jobs:
 
       - name: Extract mobile benchmark report from log
         run: |
-          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' mobile_test_output.log | sed '1d;$d' > files/mobile_benchmark_report.json
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' mobile_test_output.log | sed '1d;$d' > files/mobile_benchmark_report_${TIMESTAMP}.json
           echo "Extracted mobile Report:"
-          cat files/mobile_benchmark_report.json
+          cat files/mobile_benchmark_report_${TIMESTAMP}.json
 
       - name: Commit and Push mobile Benchmark Report
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git add files/mobile_benchmark_report.json
+          git add files/mobile_benchmark_report_${TIMESTAMP}.json
           git commit -m "Add mobile benchmark report"
           git pull --rebase origin main
           git push
@@ -67,15 +68,16 @@ jobs:
 
       - name: Extract Web benchmark report from log
         run: |
-          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' web_test_output.log | sed '1d;$d' > files/web_benchmark_report.json
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' web_test_output.log | sed '1d;$d' > files/web_benchmark_report_${TIMESTAMP}.json
           echo "Extracted Web Report:"
-          cat files/web_benchmark_report.json
+          cat files/web_benchmark_report_${TIMESTAMP}.json
 
       - name: Commit and Push Web Benchmark Report
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git add files/web_benchmark_report.json
+          git add files/web_benchmark_report_${TIMESTAMP}.json
           git commit -m "Add Web benchmark report"
           git pull --rebase origin main
           git push
