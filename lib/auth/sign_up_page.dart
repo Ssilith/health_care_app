@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/auth/form_container.dart';
+import 'package:health_care_app/services/auth_service.dart';
 import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
@@ -66,7 +66,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
             try {
               setState(() => isLoading = true);
-              await signUp(userEmail, userPassword, userRepeatPassword);
+              final authService = AuthService();
+              await authService.signUp(
+                userEmail,
+                userPassword,
+                userRepeatPassword,
+              );
               setState(() => isLoading = false);
               widget.callback();
             } catch (e) {
@@ -76,16 +81,6 @@ class _SignUpPageState extends State<SignUpPage> {
           },
         ),
       ],
-    );
-  }
-
-  Future signUp(String email, String password, String repeatPassword) async {
-    if (password != repeatPassword) {
-      throw Exception("The passwords are not identical");
-    }
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
     );
   }
 }

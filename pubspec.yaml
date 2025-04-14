@@ -67,6 +67,8 @@ dependencies:
 
   # mobile
   flutter_native_splash: ^2.4.5
+
+  
   
 dev_dependencies:
   flutter_test:
@@ -76,6 +78,10 @@ dev_dependencies:
 
   # mobile
   flutter_launcher_icons: ^0.14.3
+
+  # tests
+  mockito: ^5.4.5
+  firebase_auth_mocks: ^0.14.1
 
 flutter_launcher_icons:
   android: "launcher_icon"

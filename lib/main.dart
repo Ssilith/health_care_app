@@ -9,6 +9,7 @@ import 'package:health_care_app/auth/login_page_template.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/firebase_options.dart';
 import 'package:health_care_app/global.dart';
+import 'package:health_care_app/services/auth_service.dart';
 import 'package:health_care_app/widgets/action_container.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/search_bar_container.dart';
@@ -160,9 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () async {
                 try {
-                  await FirebaseAuth.instance.signOut();
+                  final authService = AuthService();
+                  await authService.signOut();
 
-                  User? user = FirebaseAuth.instance.currentUser;
+                  User? user = authService.getUser();
 
                   if (user == null) {
                     Navigator.pushAndRemoveUntil(

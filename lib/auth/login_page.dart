@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/auth/form_container.dart';
+import 'package:health_care_app/services/auth_service.dart';
 import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/main.dart';
 import 'package:health_care_app/widgets/input_dialog.dart';
@@ -60,7 +60,8 @@ class _LoginPageState extends State<LoginPage> {
 
             try {
               setState(() => isLoading = true);
-              await signIn(userEmail, userPassword);
+              final authService = AuthService();
+              await authService.signIn(userEmail, userPassword);
               setState(() => isLoading = false);
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const MyHomePage()),
@@ -81,17 +82,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // sign in
-  Future signIn(String email, String password) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
-
   // reset password
-  Future resetPassword(String email) async {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  Future<void> resetPassword(String email) async {
+    final authService = AuthService();
+    return await authService.resetPassword(email);
   }
 
   // change password function
