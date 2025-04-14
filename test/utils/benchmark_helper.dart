@@ -1,8 +1,8 @@
-// ignore_for_file: deprecated_member_use, avoid_web_libraries_in_flutter
-
 import 'dart:convert';
 import 'dart:io' as io;
-import 'dart:html' as html;
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'package:flutter/foundation.dart';
 
@@ -54,7 +54,10 @@ Future<void> writeBenchmarkReport() async {
       ..click();
     html.Url.revokeObjectUrl(url);
   } else {
-    final file = io.File('files/$fileName');
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = path.join(directory.path, 'files', fileName);
+    final file = io.File(filePath);
+    await file.create(recursive: true);
     await file.writeAsString(jsonString, flush: true);
   }
 }
