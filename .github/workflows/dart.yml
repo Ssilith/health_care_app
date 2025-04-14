@@ -56,19 +56,22 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Flutter tests on Web
-        run: flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10
-
-      - name: Move Benchmark Report
+      - name: Run Flutter tests on Web and capture output
         run: |
           mkdir -p files
-          mv global_benchmark_report_*.json files/
+          flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10 > test_output.log
 
-      - name: Commit and Push Benchmark Report
+      - name: Extract benchmark report from log
+        run: |
+          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' test_output.log | sed '1d;$d' > files/web_benchmark_report.json
+          echo "Extracted Web Report:"
+          cat files/web_benchmark_report.json
+
+      - name: Commit and Push Web Benchmark Report
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git add files/
+          git add files/web_benchmark_report.json
           git commit -m "Add Web benchmark report"
           git push
         env:
