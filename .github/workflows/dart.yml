@@ -23,7 +23,7 @@ jobs:
       - name: Run Flutter tests on VM
         run: flutter test --dart-define=BENCHMARK_REPEAT=10
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: benchmark-report-vm
           path: global_benchmark_report_*.json
@@ -44,7 +44,7 @@ jobs:
       - name: Run Flutter tests on Web
         run: flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: benchmark-report-web
           path: global_benchmark_report_*.json
@@ -55,13 +55,13 @@ jobs:
     needs: [test-vm, test-web]
     steps:
       - name: Download VM Benchmark Report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-report-vm
           path: artifacts/vm
 
       - name: Download Web Benchmark Report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: benchmark-report-web
           path: artifacts/web
