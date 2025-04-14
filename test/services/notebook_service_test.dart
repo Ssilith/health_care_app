@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/notebook.dart';
 import 'package:health_care_app/services/notebook_service.dart';
 import 'package:mockito/mockito.dart';
+import '../utils/benchmark_helper.dart';
 import '../utils/mocks.mocks.dart';
 
 void main() {
@@ -34,6 +35,13 @@ void main() {
 
       when(mockRepository.getNotes()).thenAnswer((_) => Future.value(notes));
 
+      await runBenchmark(() async {
+        await notebookService.getAllNotes();
+      }, testName: 'notebook_getAllNotes');
+
+      reset(mockRepository);
+      when(mockRepository.getNotes()).thenAnswer((_) => Future.value(notes));
+
       final result = await notebookService.getAllNotes();
 
       expect(result, notes);
@@ -49,6 +57,15 @@ void main() {
         noteContent: 'Content 3',
       );
 
+      when(
+        mockRepository.addNote(newNote),
+      ).thenAnswer((_) => Future.value(newNote));
+
+      await runBenchmark(() async {
+        await notebookService.addNote(newNote);
+      }, testName: 'notebook_addNote');
+
+      reset(mockRepository);
       when(
         mockRepository.addNote(newNote),
       ).thenAnswer((_) => Future.value(newNote));
@@ -72,6 +89,15 @@ void main() {
         mockRepository.editNote(updatedNote),
       ).thenAnswer((_) => Future.value(updatedNote));
 
+      await runBenchmark(() async {
+        await notebookService.editNote(updatedNote);
+      }, testName: 'notebook_editNote');
+
+      reset(mockRepository);
+      when(
+        mockRepository.editNote(updatedNote),
+      ).thenAnswer((_) => Future.value(updatedNote));
+
       final result = await notebookService.editNote(updatedNote);
 
       expect(result, updatedNote);
@@ -79,6 +105,13 @@ void main() {
     });
 
     test('deleteNote completes successfully', () async {
+      when(mockRepository.deleteNote('1')).thenAnswer((_) => Future.value());
+
+      await runBenchmark(() async {
+        await notebookService.deleteNote('1');
+      }, testName: 'notebook_deleteNote');
+
+      reset(mockRepository);
       when(mockRepository.deleteNote('1')).thenAnswer((_) => Future.value());
 
       await notebookService.deleteNote('1');

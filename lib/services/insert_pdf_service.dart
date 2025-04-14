@@ -21,11 +21,9 @@ class InsertPdfService {
 
   Future<Notebook?> handlePdfAndCreateNote() async {
     try {
-      // Use the injected FilePickerUtils.
       FilePickerResult? result = await filePickerUtils.pickSingleFile();
 
       if (result == null) {
-        print('No file selected.');
         return null;
       }
 
@@ -35,7 +33,6 @@ class InsertPdfService {
         fileBytes = await File(file.path!).readAsBytes();
       }
       if (fileBytes == null) {
-        print('Failed to load file bytes.');
         return null;
       }
 
@@ -46,7 +43,6 @@ class InsertPdfService {
 
       String response = await chatService.fetchChatGPTResponse(text);
       if (response.isEmpty) {
-        print('GPT response is empty.');
         return null;
       }
 
@@ -58,7 +54,6 @@ class InsertPdfService {
 
       return await notebookService.addNote(newNote);
     } catch (e) {
-      print('An error occurred while reading the PDF: $e');
       return null;
     }
   }

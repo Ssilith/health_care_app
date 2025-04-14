@@ -70,6 +70,11 @@ class FakeChatService extends Fake implements ChatService {
   Future<String> sendPrompt(String prompt) async {
     return "Fake prompt reply";
   }
+
+  @override
+  Future<String> getApiKey() async {
+    return "fake_key";
+  }
 }
 
 class FakeFilePickerUtils extends Fake implements FilePickerUtils {

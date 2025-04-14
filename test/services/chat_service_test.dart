@@ -4,6 +4,8 @@ import 'package:health_care_app/services/chat_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+import '../utils/benchmark_helper.dart';
+
 void main() {
   group('ChatService Tests', () {
     test('fetchChatGPTResponse returns expected content', () async {
@@ -20,6 +22,11 @@ void main() {
       });
 
       final chatService = ChatService(client: client);
+
+      await runBenchmark(() async {
+        await chatService.fetchChatGPTResponse("dummy prompt");
+      }, testName: 'chat_fetchChatGPTResponse');
+
       final response = await chatService.fetchChatGPTResponse("dummy prompt");
       expect(response, equals("Expected response"));
     });
@@ -38,6 +45,11 @@ void main() {
       });
 
       final chatService = ChatService(client: client);
+
+      await runBenchmark(() async {
+        await chatService.sendPrompt("Hello");
+      }, testName: 'chat_sendPrompt');
+
       final response = await chatService.sendPrompt("Hello");
       expect(response, equals("Prompt reply"));
     });

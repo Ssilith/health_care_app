@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/appointment.dart';
 import 'package:health_care_app/services/appointment_service.dart';
 import 'package:mockito/mockito.dart';
+import '../utils/benchmark_helper.dart';
 import '../utils/mocks.mocks.dart';
 
 void main() {
@@ -40,6 +41,15 @@ void main() {
         mockRepository.getAppointments(),
       ).thenAnswer((_) => Future.value(appointments));
 
+      await runBenchmark(() async {
+        await appointmentService.getAllAppointments();
+      }, testName: 'appointment_getAllAppointments');
+
+      reset(mockRepository);
+      when(
+        mockRepository.getAppointments(),
+      ).thenAnswer((_) => Future.value(appointments));
+
       final result = await appointmentService.getAllAppointments();
 
       expect(result, appointments);
@@ -57,6 +67,15 @@ void main() {
         purpose: 'Consultation',
       );
 
+      when(
+        mockRepository.addAppointment(newAppointment),
+      ).thenAnswer((_) => Future.value(newAppointment));
+
+      await runBenchmark(() async {
+        await appointmentService.addAppointment(newAppointment);
+      }, testName: 'appointment_addAppointment');
+
+      reset(mockRepository);
       when(
         mockRepository.addAppointment(newAppointment),
       ).thenAnswer((_) => Future.value(newAppointment));
@@ -82,6 +101,15 @@ void main() {
         mockRepository.editAppointment(updatedAppointment),
       ).thenAnswer((_) => Future.value(updatedAppointment));
 
+      await runBenchmark(() async {
+        await appointmentService.editAppointment(updatedAppointment);
+      }, testName: 'appointment_editAppointment');
+
+      reset(mockRepository);
+      when(
+        mockRepository.editAppointment(updatedAppointment),
+      ).thenAnswer((_) => Future.value(updatedAppointment));
+
       final result = await appointmentService.editAppointment(
         updatedAppointment,
       );
@@ -91,6 +119,15 @@ void main() {
     });
 
     test('deleteAppointment completes successfully', () async {
+      when(
+        mockRepository.deleteAppointment('1'),
+      ).thenAnswer((_) => Future.value());
+
+      await runBenchmark(() async {
+        await appointmentService.deleteAppointment('1');
+      }, testName: 'appointment_deleteAppointment');
+
+      reset(mockRepository);
       when(
         mockRepository.deleteAppointment('1'),
       ).thenAnswer((_) => Future.value());

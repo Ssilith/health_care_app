@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'services/auth_service_test.dart' as auth_tests;
@@ -7,6 +10,7 @@ import 'services/insert_pdf_service_test.dart' as insert_pdf_tests;
 import 'services/appointment_service_test.dart' as appointment_test;
 import 'services/ice_service_test.dart' as ice_tests;
 import 'services/notebook_service_test.dart' as notebook_tests;
+import 'utils/benchmark_helper.dart';
 
 void main() {
   group('All Unit Tests', () {
@@ -17,5 +21,12 @@ void main() {
     appointment_test.main();
     ice_tests.main();
     notebook_tests.main();
+  });
+
+  tearDownAll(() async {
+    final file = File(
+      'files/all_benchmarks_${DateTime.now().millisecondsSinceEpoch}.json',
+    );
+    await file.writeAsString(jsonEncode(globalBenchmarkReports), flush: true);
   });
 }

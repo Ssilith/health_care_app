@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/notebook.dart';
 import 'package:health_care_app/services/insert_pdf_service.dart';
+import '../utils/benchmark_helper.dart';
 import '../utils/fakes_and_mocks.dart';
 
 void main() {
@@ -20,6 +21,10 @@ void main() {
           chatService: fakeChatService,
           filePickerUtils: fakeFilePickerUtils,
         );
+
+        await runBenchmark(() async {
+          await insertPdfService.handlePdfAndCreateNote();
+        }, testName: 'insertPdf_handlePdfAndCreateNote');
 
         final Notebook? note = await insertPdfService.handlePdfAndCreateNote();
 

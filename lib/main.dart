@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Health Care App',
       theme: ThemeData(
-        dialogTheme: const DialogTheme(elevation: 0),
+        dialogTheme: DialogThemeData(elevation: 0),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: Colors.black,
         ),

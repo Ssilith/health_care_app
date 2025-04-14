@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/ice_info.dart';
 import 'package:health_care_app/services/ice_service.dart';
 import 'package:mockito/mockito.dart';
+import '../utils/benchmark_helper.dart';
 import '../utils/mocks.mocks.dart';
 
 void main() {
@@ -56,6 +57,15 @@ void main() {
         mockRepository.getIceInfos(),
       ).thenAnswer((_) => Future.value(dummyIceInfos));
 
+      await runBenchmark(() async {
+        await iceService.getAllIceInfos();
+      }, testName: 'ice_getAllIceInfos');
+
+      reset(mockRepository);
+      when(
+        mockRepository.getIceInfos(),
+      ).thenAnswer((_) => Future.value(dummyIceInfos));
+
       final result = await iceService.getAllIceInfos();
 
       expect(result, dummyIceInfos);
@@ -80,6 +90,15 @@ void main() {
         insuranceNumber: 'INS789',
       );
 
+      when(
+        mockRepository.addIceInfo(newIceInfo),
+      ).thenAnswer((_) => Future.value(newIceInfo));
+
+      await runBenchmark(() async {
+        await iceService.addIceInfo(newIceInfo);
+      }, testName: 'ice_addIceInfo');
+
+      reset(mockRepository);
       when(
         mockRepository.addIceInfo(newIceInfo),
       ).thenAnswer((_) => Future.value(newIceInfo));
@@ -112,6 +131,15 @@ void main() {
         mockRepository.editIceInfo(updatedIceInfo),
       ).thenAnswer((_) => Future.value(updatedIceInfo));
 
+      await runBenchmark(() async {
+        await iceService.editIceInfo(updatedIceInfo);
+      }, testName: 'ice_editIceInfo');
+
+      reset(mockRepository);
+      when(
+        mockRepository.editIceInfo(updatedIceInfo),
+      ).thenAnswer((_) => Future.value(updatedIceInfo));
+
       final result = await iceService.editIceInfo(updatedIceInfo);
 
       expect(result, updatedIceInfo);
@@ -119,6 +147,13 @@ void main() {
     });
 
     test('deleteIceInfo completes successfully', () async {
+      when(mockRepository.deleteIceInfo('1')).thenAnswer((_) => Future.value());
+
+      await runBenchmark(() async {
+        await iceService.deleteIceInfo('1');
+      }, testName: 'ice_deleteIceInfo');
+
+      reset(mockRepository);
       when(mockRepository.deleteIceInfo('1')).thenAnswer((_) => Future.value());
 
       await iceService.deleteIceInfo('1');

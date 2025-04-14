@@ -4,6 +4,7 @@ import 'package:health_care_app/model/building.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:location/location.dart';
+import '../utils/benchmark_helper.dart';
 import '../utils/fakes_and_mocks.dart';
 
 void main() {
@@ -36,6 +37,10 @@ void main() {
         "latitude": 50.0,
         "longitude": 100.0,
       });
+
+      await runBenchmark(() async {
+        await geoService.findNearestPharmacy(locationData);
+      }, testName: 'geo_findNearestPharmacy');
 
       final buildings = await geoService.findNearestPharmacy(locationData);
 
@@ -75,6 +80,11 @@ void main() {
         "latitude": 51.0,
         "longitude": 101.0,
       });
+
+      await runBenchmark(() async {
+        await geoService.findNearestHospital(locationData);
+      }, testName: 'geo_findNearestHospital');
+
       final buildings = await geoService.findNearestHospital(locationData);
 
       expect(buildings, isA<List<Building>>());
