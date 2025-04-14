@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 
 import 'services/auth_service_test.dart' as auth_tests;
@@ -24,9 +21,6 @@ void main() {
   });
 
   tearDownAll(() async {
-    final file = File(
-      'files/all_benchmarks_${DateTime.now().millisecondsSinceEpoch}.json',
-    );
-    await file.writeAsString(jsonEncode(globalBenchmarkReports), flush: true);
+    await writeBenchmarkReport();
   });
 }

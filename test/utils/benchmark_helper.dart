@@ -1,3 +1,11 @@
+// ignore_for_file: deprecated_member_use, avoid_web_libraries_in_flutter
+
+import 'dart:convert';
+import 'dart:io' as io;
+import 'dart:html' as html;
+
+import 'package:flutter/foundation.dart';
+
 const int benchmarkRepeat = int.fromEnvironment(
   'BENCHMARK_REPEAT',
   defaultValue: 100,
@@ -30,4 +38,23 @@ Future<Map<String, dynamic>> runBenchmark(
   globalBenchmarkReports.add(report);
 
   return report;
+}
+
+Future<void> writeBenchmarkReport() async {
+  final jsonString = jsonEncode(globalBenchmarkReports);
+  final fileName =
+      'all_benchmarks_${DateTime.now().millisecondsSinceEpoch}.json';
+
+  if (kIsWeb) {
+    final bytes = utf8.encode(jsonString);
+    final blob = html.Blob([bytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute('download', fileName)
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  } else {
+    final file = io.File('files/$fileName');
+    await file.writeAsString(jsonString, flush: true);
+  }
 }
