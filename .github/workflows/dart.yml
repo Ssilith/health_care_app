@@ -32,6 +32,9 @@ jobs:
       - name: Extract mobile benchmark report from log
         run: |
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          echo "Using TIMESTAMP: $TIMESTAMP"
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+          
           awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' mobile_test_output.log | sed '1d;$d' > files/mobile_benchmark_report_${TIMESTAMP}.json
           echo "Extracted mobile Report:"
           cat files/mobile_benchmark_report_${TIMESTAMP}.json
@@ -69,6 +72,9 @@ jobs:
       - name: Extract Web benchmark report from log
         run: |
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          echo "Using TIMESTAMP: $TIMESTAMP"
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+
           awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' web_test_output.log | sed '1d;$d' > files/web_benchmark_report_${TIMESTAMP}.json
           echo "Extracted Web Report:"
           cat files/web_benchmark_report_${TIMESTAMP}.json
