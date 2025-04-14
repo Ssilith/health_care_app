@@ -1,14 +1,41 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/appointment.dart';
+import 'package:health_care_app/model/building.dart';
 import 'package:health_care_app/model/ice_info.dart';
 import 'package:health_care_app/model/notebook.dart';
 import 'package:health_care_app/services/appointment_service.dart';
 import 'package:health_care_app/services/auth_service.dart';
+import 'package:health_care_app/services/geo_service.dart';
 import 'package:health_care_app/services/ice_service.dart';
 import 'package:health_care_app/services/notebook_service.dart';
+import 'package:health_care_app/services/chat_service.dart';
+import 'package:health_care_app/services/insert_pdf_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:location/location.dart';
 import 'package:mockito/mockito.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'mocks.mocks.dart';
+
+class FakeFilePickerUtils extends Fake implements FilePickerUtils {
+  @override
+  Future<FilePickerResult?> pickSingleFile() async {
+    // Create a dummy PDF document using Syncfusion.
+    final PdfDocument document = PdfDocument();
+    // Add a blank page.
+    document.pages.add();
+    // document.save() returns a List<int>; convert it to Uint8List.
+    final Uint8List pdfBytes = Uint8List.fromList(await document.save());
+    document.dispose();
+    return FilePickerResult([
+      PlatformFile(name: "dummy.pdf", size: pdfBytes.length, bytes: pdfBytes),
+    ]);
+  }
+}
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {
   @override
@@ -56,26 +83,50 @@ class MockFirebaseAuth extends Mock implements FirebaseAuth {
 
 class MockUserCredential extends Mock implements UserCredential {}
 
+class FakeNotebookService extends Fake implements NotebookService {
+  @override
+  Future<Notebook> addNote(Notebook note) async => note;
+}
+
+class FakeChatService extends Fake implements ChatService {
+  @override
+  Future<String> fetchChatGPTResponse(String prompt) async {
+    return "Fake GPT response";
+  }
+
+  @override
+  Future<String> sendPrompt(String prompt) async {
+    return "Fake prompt reply";
+  }
+}
+
+/// For GeoService tests.
+class FakeGeoService extends GeoService {
+  FakeGeoService({super.client});
+  @override
+  Future<String> getApiKey() async => "fake_geo_key";
+}
+
 void main() {
-  // ---------- Authentication tests ----------
+  // ---------- Authentication and Firebase CRUD tests ----------
   late MockFirebaseAuth mockFirebaseAuth;
   late AuthService authService;
 
   late MockRepository mockRepository;
+  late IceService iceService;
   late NotebookService notebookService;
   late AppointmentService appointmentService;
-  late IceService iceService;
 
   setUp(() {
     mockFirebaseAuth = MockFirebaseAuth();
     authService = AuthService(firebaseAuth: mockFirebaseAuth);
     mockRepository = MockRepository();
+    iceService = IceService.withRepository(mockRepository);
     notebookService = NotebookService.withRepository(mockRepository);
     appointmentService = AppointmentService.withRepository(mockRepository);
-    iceService = IceService.withRepository(mockRepository);
   });
 
-  group('AuthService', () {
+  group('AuthService Tests', () {
     test('signUp throws exception when passwords do not match', () async {
       expect(
         () => authService.signUp('test@example.com', 'password', 'different'),
@@ -92,7 +143,7 @@ void main() {
             email: 'test@example.com',
             password: 'password',
           ),
-        ).thenAnswer((_) async => userCredential);
+        ).thenAnswer((_) => Future.value(userCredential));
 
         final result = await authService.signUp(
           'test@example.com',
@@ -114,13 +165,12 @@ void main() {
       'signIn calls signInWithEmailAndPassword and returns user credential',
       () async {
         final userCredential = MockUserCredential();
-
         when(
           mockFirebaseAuth.signInWithEmailAndPassword(
             email: 'test@example.com',
             password: 'password',
           ),
-        ).thenAnswer((_) async => userCredential);
+        ).thenAnswer((_) => Future.value(userCredential));
 
         final result = await authService.signIn('test@example.com', 'password');
 
@@ -139,7 +189,7 @@ void main() {
       () async {
         when(
           mockFirebaseAuth.sendPasswordResetEmail(email: 'test@example.com'),
-        ).thenAnswer((_) async {});
+        ).thenAnswer((_) => Future.value());
 
         await authService.resetPassword('test@example.com');
 
@@ -150,60 +200,10 @@ void main() {
     );
   });
 
-  // ---------- Geo API tests ----------
-  // group('Geo API Tests', () {
-  //   // Using real or mocked geo service.
-  //   final geoService = GeoService();
-
-  //   test('Find nearest hospitals returns a non-empty list', () async {
-  //     // Arrange: sample coordinates (for example, San Francisco).
-  //     final latitude = 37.7749;
-  //     final longitude = -122.4194;
-
-  //     // Act
-  //     final hospitals = await geoService.findNearestHospitals(latitude, longitude);
-
-  //     // Assert: expecting a list with at least one hospital.
-  //     expect(hospitals, isA<List>(), reason: 'Should return a list of hospitals');
-  //     expect(hospitals.length, greaterThan(0));
-  //   });
-
-  //   test('Find nearest pharmacies returns a non-empty list', () async {
-  //     // Arrange: use the same sample coordinates.
-  //     final latitude = 37.7749;
-  //     final longitude = -122.4194;
-
-  //     // Act
-  //     final pharmacies = await geoService.findNearestPharmacies(latitude, longitude);
-
-  //     // Assert:
-  //     expect(pharmacies, isA<List>(), reason: 'Should return a list of pharmacies');
-  //     expect(pharmacies.length, greaterThan(0));
-  //   });
-  // });
-
-  // // ---------- Chat Bot Tests ----------
-  // group('Chat Bot Tests', () {
-  //   final chatService = ChatService();
-
-  //   test('Chat bot responds with non-empty output for a query', () async {
-  //     // Arrange
-  //     final inputMessage = 'Hello, how can I get help?';
-
-  //     // Act
-  //     final response = await chatService.getResponse(inputMessage);
-
-  //     // Assert: expect a non-empty response.
-  //     expect(response, isNotEmpty, reason: 'Chat bot should return a valid response message');
-  //     // Optionally, you could check whether the response includes key phrases.
-  //   });
-  // });
-
-  // // ---------- Firebase CRUD tests for emergencies, appointments, and notebook data ----------
   group('Firebase CRUD Tests', () {
     group('IceService Tests', () {
       test('getAllIceInfos returns list of IceInfo', () async {
-        final iceInfos = [
+        final dummyIceInfos = [
           IceInfo(
             id: '1',
             userId: 'user1',
@@ -238,13 +238,15 @@ void main() {
           ),
         ];
 
+        when(mockRepository.getUserId()).thenReturn("user1");
+
         when(
           mockRepository.getIceInfos(),
-        ).thenAnswer((_) => Future.value(iceInfos));
+        ).thenAnswer((_) => Future.value(dummyIceInfos));
 
         final result = await iceService.getAllIceInfos();
 
-        expect(result, iceInfos);
+        expect(result, dummyIceInfos);
         verify(mockRepository.getIceInfos()).called(1);
       });
 
@@ -478,21 +480,146 @@ void main() {
     });
   });
 
-  // // ---------- PDF File and ChatGPT PDF summary tests ----------
-  // group('PDF Summary Tests', () {
-  //   final pdfService = PdfService();
+  group('ChatService Tests', () {
+    test('fetchChatGPTResponse returns expected content', () async {
+      final fakeResponse = {
+        "choices": [
+          {
+            "message": {"content": "Expected response"},
+          },
+        ],
+      };
 
-  //   test('Uploading a PDF and generating summary returns valid summary text', () async {
-  //     // Arrange: Provide the path or bytes for a sample PDF.
-  //     // In a unit test, you might load a test asset or use dummy data.
-  //     final pdfFilePath = 'assets/sample.pdf';
+      final client = MockClient((request) async {
+        return http.Response(jsonEncode(fakeResponse), 200);
+      });
 
-  //     // Act: Call the method that sends the PDF to ChatGPT for summarization.
-  //     final summary = await pdfService.getPdfSummary(pdfFilePath);
+      final chatService = ChatService(client: client);
+      final response = await chatService.fetchChatGPTResponse("dummy prompt");
+      expect(response, equals("Expected response"));
+    });
 
-  //     // Assert: Expect that a summary is returned.
-  //     expect(summary, isNotEmpty, reason: 'The PDF summary should not be empty');
-  //     // Optionally, assert the summary contains expected keywords.
-  //   });
-  // });
+    test('sendPrompt returns expected content', () async {
+      final fakeResponse = {
+        "choices": [
+          {
+            "message": {"content": "Prompt reply"},
+          },
+        ],
+      };
+
+      final client = MockClient((request) async {
+        return http.Response(jsonEncode(fakeResponse), 200);
+      });
+
+      final chatService = ChatService(client: client);
+      final response = await chatService.sendPrompt("Hello");
+      expect(response, equals("Prompt reply"));
+    });
+  });
+
+  group('InsertPdfService Tests', () {
+    late FakeFilePickerUtils fakeFilePickerUtils;
+    setUp(() {
+      fakeFilePickerUtils = FakeFilePickerUtils();
+    });
+
+    test(
+      'handlePdfAndCreateNote returns a Notebook with expected content',
+      () async {
+        final fakeChatService = FakeChatService();
+        final fakeNotebookService = FakeNotebookService();
+        final insertPdfService = InsertPdfService(
+          notebookService: fakeNotebookService,
+          chatService: fakeChatService,
+          filePickerUtils: fakeFilePickerUtils,
+        );
+
+        final Notebook? note = await insertPdfService.handlePdfAndCreateNote();
+
+        expect(note, isNotNull);
+        expect(note!.noteTitle, equals("Chat GPT Note"));
+        expect(note.noteContent, equals("Fake GPT response"));
+      },
+    );
+  });
+
+  group('GeoService Tests', () {
+    test('findNearestPharmacy returns a list of Buildings', () async {
+      final fakeResponse = {
+        "features": [
+          {
+            "geometry": {
+              "coordinates": [100.0, 50.0],
+            },
+            "properties": {
+              "name": "Pharmacy One",
+              "address_line2": "123 Pharmacy St",
+              "datasource": {
+                "raw": {"phone": "111-222", "website": "http://pharmacy.one"},
+              },
+            },
+          },
+        ],
+      };
+
+      final client = MockClient((request) async {
+        return http.Response(jsonEncode(fakeResponse), 200);
+      });
+
+      final geoService = FakeGeoService(client: client);
+
+      final locationData = LocationData.fromMap({
+        "latitude": 50.0,
+        "longitude": 100.0,
+      });
+
+      final buildings = await geoService.findNearestPharmacy(locationData);
+
+      expect(buildings, isA<List<Building>>());
+      expect(buildings.length, equals(1));
+      expect(buildings.first.name, equals("Pharmacy One"));
+      expect(buildings.first.address, equals("123 Pharmacy St"));
+      expect(buildings.first.phone, equals("111-222"));
+      expect(buildings.first.website, equals("http://pharmacy.one"));
+    });
+
+    test('findNearestHospital returns a list of Buildings', () async {
+      final fakeResponse = {
+        "features": [
+          {
+            "geometry": {
+              "coordinates": [101.0, 51.0],
+            },
+            "properties": {
+              "name": "Hospital One",
+              "address_line2": "456 Hospital Rd",
+              "datasource": {
+                "raw": {"phone": "333-444", "website": "http://hospital.one"},
+              },
+            },
+          },
+        ],
+      };
+
+      final client = MockClient((request) async {
+        return http.Response(jsonEncode(fakeResponse), 200);
+      });
+
+      final geoService = FakeGeoService(client: client);
+
+      final locationData = LocationData.fromMap({
+        "latitude": 51.0,
+        "longitude": 101.0,
+      });
+      final buildings = await geoService.findNearestHospital(locationData);
+
+      expect(buildings, isA<List<Building>>());
+      expect(buildings.length, equals(1));
+      expect(buildings.first.name, equals("Hospital One"));
+      expect(buildings.first.address, equals("456 Hospital Rd"));
+      expect(buildings.first.phone, equals("333-444"));
+      expect(buildings.first.website, equals("http://hospital.one"));
+    });
+  });
 }

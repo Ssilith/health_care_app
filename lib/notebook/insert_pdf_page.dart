@@ -20,7 +20,7 @@ class _InsertPdfPageState extends State<InsertPdfPage> {
   Future<void> readPDF() async {
     setState(() => isLoading = true);
 
-    final note = await insertPdfService.handlePdfAndCreateNote(context);
+    final note = await insertPdfService.handlePdfAndCreateNote();
 
     setState(() => isLoading = false);
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/api/location.dart';
-import 'package:health_care_app/api/nearest_building_api.dart';
 import 'package:health_care_app/localization/building_finder.dart';
 import 'package:health_care_app/model/building.dart';
+import 'package:health_care_app/services/geo_service.dart';
 import 'package:latlong2/latlong.dart';
 
 class PharmacyFinder extends StatefulWidget {
@@ -17,6 +17,8 @@ class _PharmacyFinderState extends State<PharmacyFinder> {
   LatLng? userLocation;
   bool isLoading = true;
 
+  final GeoService geoService = GeoService();
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +29,7 @@ class _PharmacyFinderState extends State<PharmacyFinder> {
     var locationData = await initializeLocation();
     if (locationData != null) {
       userLocation = LatLng(locationData.latitude, locationData.longitude);
-      var pharmaciesList = await findNearestPharmacy(locationData);
+      var pharmaciesList = await geoService.findNearestPharmacy(locationData);
       setState(() {
         pharmacies = pharmaciesList;
         isLoading = false;

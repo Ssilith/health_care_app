@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/api/chat_gpt.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/chat/chat_bubble.dart';
 import 'package:health_care_app/model/message.dart';
+import 'package:health_care_app/services/chat_service.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
 
 List<Message> chat = [];
@@ -15,6 +15,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final ChatService chatService = ChatService();
   final TextEditingController _messageController = TextEditingController();
 
   sendMessage() async {
@@ -35,7 +36,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   getChatResponse(String message) async {
-    String response = await sendPrompt(message, context);
+    String response = await chatService.sendPrompt(message);
     setState(() {
       chat.add(
         Message(
