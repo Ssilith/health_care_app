@@ -20,7 +20,7 @@ void main() {
     notebook_tests.main();
   });
 
-  tearDownAll(() async {
-    await writeBenchmarkReport();
+  tearDownAll(() {
+    outputBenchmarkReport(globalBenchmarkReports);
   });
 }

@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+
 jobs:
   test-vm:
     name: Run Flutter tests on VM
@@ -24,10 +27,20 @@ jobs:
       - name: Run Flutter tests on VM
         run: flutter test --dart-define=BENCHMARK_REPEAT=10
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-report-vm
-          path: global_benchmark_report_*.json
+      - name: Move Benchmark Report
+        run: |
+          mkdir -p files
+          mv global_benchmark_report_*.json files/
+
+      - name: Commit and Push Benchmark Report
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add files/
+          git commit -m "Add VM benchmark report"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test-web:
     name: Run Flutter tests on Web (Chrome)
@@ -46,27 +59,17 @@ jobs:
       - name: Run Flutter tests on Web
         run: flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-report-web
-          path: global_benchmark_report_*.json
+      - name: Move Benchmark Report
+        run: |
+          mkdir -p files
+          mv global_benchmark_report_*.json files/
 
-  collect-artifacts:
-    name: Collect Benchmark Reports
-    runs-on: ubuntu-latest
-    needs: [test-vm, test-web]
-    steps:
-      - name: Download VM Benchmark Report
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark-report-vm
-          path: artifacts/vm
-
-      - name: Download Web Benchmark Report
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark-report-web
-          path: artifacts/web
-
-      - name: List Downloaded Files
-        run: ls -R artifacts
+      - name: Commit and Push Benchmark Report
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add files/
+          git commit -m "Add Web benchmark report"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
