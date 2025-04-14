@@ -39,6 +39,7 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git pull --rebase origin main
           git add files/mobile_benchmark_report.json
           git commit -m "Add mobile benchmark report"
           git push
@@ -74,6 +75,7 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git pull --rebase origin main
           git add files/web_benchmark_report.json
           git commit -m "Add Web benchmark report"
           git push
