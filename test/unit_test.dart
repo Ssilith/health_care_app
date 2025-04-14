@@ -1,11 +1,8 @@
-// test/unit_test.dart
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/services/auth_service.dart';
 import 'package:mockito/mockito.dart';
 
-/// Custom mock for FirebaseAuth that overrides the methods for stubbing.
 class MockFirebaseAuth extends Mock implements FirebaseAuth {
   @override
   Future<UserCredential> createUserWithEmailAndPassword({
@@ -74,7 +71,6 @@ void main() {
       'signUp calls createUserWithEmailAndPassword with valid inputs',
       () async {
         final userCredential = MockUserCredential();
-        // Stub the method so that when called with specific values it returns our desired credential.
         when(
           mockFirebaseAuth.createUserWithEmailAndPassword(
             email: 'test@example.com',
