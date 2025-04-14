@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/api/nearest_building_api.dart';
 import 'package:health_care_app/localization/navigate_to_container.dart';
+import 'package:health_care_app/model/building.dart';
 
 class BuildingInfo extends StatelessWidget {
   final Building building;

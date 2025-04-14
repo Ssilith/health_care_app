@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:health_care_app/model/appointment.dart';
-import 'package:health_care_app/services/repository.dart';
+import 'package:health_care_app/services/appointment_service.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/popup_window.dart';
 import 'package:intl/intl.dart';
@@ -9,19 +9,19 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class AppointmentContainer extends StatelessWidget {
   final Appointment appointment;
-  final Repository repository;
   final Function(String) onDelete;
   final VoidCallback onEdit;
   const AppointmentContainer({
     super.key,
     required this.appointment,
-    required this.repository,
     required this.onDelete,
     required this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
+    final AppointmentService appointmentService = AppointmentService();
+
     return Slidable(
       startActionPane: ActionPane(
         motion: const StretchMotion(),
@@ -63,7 +63,7 @@ class AppointmentContainer extends StatelessWidget {
                                 "Do you really want to delete this appointment?",
                             onPressed: () async {
                               try {
-                                await repository.deleteAppointment(
+                                await appointmentService.deleteAppointment(
                                   appointment.id ?? "",
                                 );
                                 onDelete(appointment.id ?? "");

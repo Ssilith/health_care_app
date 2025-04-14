@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:health_care_app/model/ice_info.dart';
-import 'package:health_care_app/services/repository.dart';
+import 'package:health_care_app/services/ice_service.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/popup_window.dart';
 
-class IceContainer extends StatelessWidget {
-  final Repository repository;
+class IceContainer extends StatefulWidget {
   final IceInfo info;
   final Function(String) onDelete;
   final VoidCallback onEdit;
   const IceContainer({
     super.key,
-    required this.repository,
     required this.info,
     required this.onDelete,
     required this.onEdit,
   });
+
+  @override
+  State<IceContainer> createState() => _IceContainerState();
+}
+
+class _IceContainerState extends State<IceContainer> {
+  final IceService iceService = IceService();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +39,7 @@ class IceContainer extends StatelessWidget {
               foregroundColor: Theme.of(context).colorScheme.primary,
               icon: Icons.edit,
               label: "Edit",
-              onPressed: (_) => onEdit(),
+              onPressed: (_) => widget.onEdit(),
             ),
           ),
           IconTheme(
@@ -60,8 +65,10 @@ class IceContainer extends StatelessWidget {
                             message: "Do you really want to delete this info?",
                             onPressed: () async {
                               try {
-                                await repository.deleteIceInfo(info.id ?? "");
-                                onDelete(info.id ?? "");
+                                await iceService.deleteIceInfo(
+                                  widget.info.id ?? "",
+                                );
+                                widget.onDelete(widget.info.id ?? "");
                                 Navigator.of(context).pop();
                               } catch (e) {
                                 displayErrorMotionToast(
@@ -95,7 +102,7 @@ class IceContainer extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                info.fullName,
+                widget.info.fullName,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -103,59 +110,69 @@ class IceContainer extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 5),
-              buildInfoRow("Birth Date", info.birthDate, Icons.cake, context),
+              buildInfoRow(
+                "Birth Date",
+                widget.info.birthDate,
+                Icons.cake,
+                context,
+              ),
               buildInfoRow(
                 "Gender",
-                info.gender,
+                widget.info.gender,
                 Icons.person_outline,
                 context,
               ),
               buildInfoRow(
                 "Blood Type",
-                info.bloodType,
+                widget.info.bloodType,
                 Icons.bloodtype,
                 context,
               ),
               buildInfoRow(
                 "Allergies",
-                info.allergies,
+                widget.info.allergies,
                 Icons.warning_amber,
                 context,
               ),
               buildInfoRow(
                 "Medical Conditions",
-                info.medicalConditions,
+                widget.info.medicalConditions,
                 Icons.healing,
                 context,
               ),
               buildInfoRow(
                 "Medications",
-                info.medications,
+                widget.info.medications,
                 Icons.medication,
                 context,
               ),
               buildInfoRow(
                 "Contact Name",
-                info.emergencyContactName,
+                widget.info.emergencyContactName,
                 Icons.contact_phone,
                 context,
               ),
               buildInfoRow(
                 "Phone",
-                info.emergencyContactNumber,
+                widget.info.emergencyContactNumber,
                 Icons.phone,
                 context,
               ),
-              buildInfoRow("Relation", info.relation, Icons.people, context),
+              buildInfoRow(
+                "Relation",
+                widget.info.relation,
+                Icons.people,
+                context,
+              ),
               buildInfoRow(
                 "Insurance",
-                info.insuranceProvider,
+                widget.info.insuranceProvider,
                 Icons.shield,
                 context,
               ),
               buildInfoRow(
                 "Policy #",
-                info.insuranceNumber,
+                widget.info.insuranceNumber,
                 Icons.description,
                 context,
               ),

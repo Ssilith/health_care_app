@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:health_care_app/api/nearest_building_api.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/localization/building_details.dart';
+import 'package:health_care_app/model/building.dart';
 import 'package:health_care_app/widgets/loading.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';

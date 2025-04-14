@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/model/notebook.dart';
-import 'package:health_care_app/services/repository.dart';
-import 'package:health_care_app/services/repository_impl.dart';
+import 'package:health_care_app/services/notebook_service.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
@@ -21,7 +20,7 @@ class _NotebookFormState extends State<NotebookForm> {
   final TextEditingController title = TextEditingController();
   final TextEditingController content = TextEditingController();
 
-  final Repository repository = RepositoryImpl();
+  final NotebookService notebookService = NotebookService();
   bool isLoading = false;
 
   @override
@@ -95,8 +94,8 @@ class _NotebookFormState extends State<NotebookForm> {
 
                     Notebook addedNote =
                         widget.existingNote != null
-                            ? await repository.editNote(newNote)
-                            : await repository.addNote(newNote);
+                            ? await notebookService.editNote(newNote)
+                            : await notebookService.addNote(newNote);
                     widget.onChange(addedNote);
                     setState(() => isLoading = false);
                     Navigator.of(context).pop();

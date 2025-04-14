@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/model/ice_info.dart';
-import 'package:health_care_app/services/repository.dart';
-import 'package:health_care_app/services/repository_impl.dart';
+import 'package:health_care_app/services/ice_service.dart';
 import 'package:health_care_app/widgets/date_and_time_picker.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/rectangular_button.dart';
@@ -33,7 +32,7 @@ class _IceFormState extends State<IceForm> {
   final TextEditingController insuranceProvider = TextEditingController();
   final TextEditingController insuranceNumber = TextEditingController();
 
-  final Repository repository = RepositoryImpl();
+  final IceService iceService = IceService();
   bool isLoading = false;
 
   @override
@@ -229,8 +228,8 @@ class _IceFormState extends State<IceForm> {
 
                       IceInfo changedInfo =
                           widget.existingInfo != null
-                              ? await repository.editIceInfo(newInfo)
-                              : await repository.addIceInfo(newInfo);
+                              ? await iceService.editIceInfo(newInfo)
+                              : await iceService.addIceInfo(newInfo);
                       widget.onChange(changedInfo);
                       setState(() => isLoading = false);
                       Navigator.of(context).pop();

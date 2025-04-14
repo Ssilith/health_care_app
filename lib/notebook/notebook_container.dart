@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:health_care_app/appointments/appointment_container.dart';
 import 'package:health_care_app/model/notebook.dart';
-import 'package:health_care_app/services/repository.dart';
+import 'package:health_care_app/services/notebook_service.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/popup_window.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class NotebookContainer extends StatefulWidget {
-  final Repository repository;
   final Notebook note;
   final Function(String) onDelete;
   final VoidCallback onEdit;
   const NotebookContainer({
     super.key,
-    required this.repository,
     required this.note,
     required this.onDelete,
     required this.onEdit,
@@ -26,6 +24,7 @@ class NotebookContainer extends StatefulWidget {
 }
 
 class _NotebookContainerState extends State<NotebookContainer> {
+  final NotebookService notebookService = NotebookService();
   bool isExpanded = false;
 
   @override
@@ -73,7 +72,7 @@ class _NotebookContainerState extends State<NotebookContainer> {
                                   "Do you really want to delete this note?",
                               onPressed: () async {
                                 try {
-                                  await widget.repository.deleteNote(
+                                  await notebookService.deleteNote(
                                     widget.note.id ?? "",
                                   );
                                   widget.onDelete(widget.note.id ?? "");

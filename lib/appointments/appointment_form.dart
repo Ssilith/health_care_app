@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:health_care_app/services/appointment_service.dart';
 import 'package:health_care_app/widgets/rectangular_button.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/model/appointment.dart';
-import 'package:health_care_app/services/repository.dart';
-import 'package:health_care_app/services/repository_impl.dart';
 import 'package:health_care_app/widgets/date_and_time_picker.dart';
 import 'package:health_care_app/widgets/message.dart';
 import 'package:health_care_app/widgets/text_input_form.dart';
@@ -31,7 +30,7 @@ class _AppointmentFormState extends State<AppointmentForm> {
   TextEditingController location = TextEditingController();
   TextEditingController purpose = TextEditingController();
 
-  final Repository repository = RepositoryImpl();
+  final AppointmentService appointmentService = AppointmentService();
   bool isLoading = false;
 
   @override
@@ -143,8 +142,12 @@ class _AppointmentFormState extends State<AppointmentForm> {
                     );
                     Appointment addedAppointment =
                         widget.existingAppointment != null
-                            ? await repository.editAppointment(appointment)
-                            : await repository.addAppointment(appointment);
+                            ? await appointmentService.editAppointment(
+                              appointment,
+                            )
+                            : await appointmentService.addAppointment(
+                              appointment,
+                            );
                     widget.onChange(addedAppointment);
                     setState(() => isLoading = false);
                     Navigator.of(context).pop();

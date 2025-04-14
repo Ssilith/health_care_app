@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_care_app/api/location.dart';
 import 'package:health_care_app/api/nearest_building_api.dart';
 import 'package:health_care_app/localization/building_finder.dart';
+import 'package:health_care_app/model/building.dart';
 import 'package:latlong2/latlong.dart';
 
 class PharmacyFinder extends StatefulWidget {

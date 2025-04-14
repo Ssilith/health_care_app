@@ -4,8 +4,7 @@ import 'package:health_care_app/appointments/appointment_form.dart';
 import 'package:health_care_app/appointments/main_switch.dart';
 import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/model/appointment.dart';
-import 'package:health_care_app/services/repository.dart';
-import 'package:health_care_app/services/repository_impl.dart';
+import 'package:health_care_app/services/appointment_service.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -23,14 +22,14 @@ class _MainAppointmentsState extends State<MainAppointments> {
   List selectedDayAppointments = [];
   List selectedAfterDayAppointments = [];
   Map groupedAfterDayAppointments = {};
-  final Repository repository = RepositoryImpl();
+  final AppointmentService appointmentService = AppointmentService();
   List<Appointment> appointments = [];
   Future? getAppointments;
 
   @override
   void initState() {
     super.initState();
-    getAppointments = repository.getAppointments();
+    getAppointments = appointmentService.getAllAppointments();
   }
 
   @override
@@ -169,7 +168,6 @@ class _MainAppointmentsState extends State<MainAppointments> {
                     padding: const EdgeInsets.all(4.0),
                     child: AppointmentContainer(
                       appointment: appointment,
-                      repository: repository,
                       onEdit: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -273,7 +271,6 @@ class _MainAppointmentsState extends State<MainAppointments> {
             padding: const EdgeInsets.all(4.0),
             child: AppointmentContainer(
               appointment: appointment,
-              repository: repository,
               onEdit: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(

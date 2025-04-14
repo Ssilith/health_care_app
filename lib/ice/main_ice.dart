@@ -3,8 +3,7 @@ import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/ice/ice_container.dart';
 import 'package:health_care_app/ice/ice_form.dart';
 import 'package:health_care_app/model/ice_info.dart';
-import 'package:health_care_app/services/repository.dart';
-import 'package:health_care_app/services/repository_impl.dart';
+import 'package:health_care_app/services/ice_service.dart';
 
 class MainIce extends StatefulWidget {
   const MainIce({super.key});
@@ -14,14 +13,14 @@ class MainIce extends StatefulWidget {
 }
 
 class _MainIceState extends State<MainIce> {
-  final Repository repository = RepositoryImpl();
+  final IceService iceService = IceService();
   List<IceInfo> infos = [];
   Future? getInfos;
 
   @override
   void initState() {
     super.initState();
-    getInfos = repository.getIceInfos();
+    getInfos = iceService.getAllIceInfos();
   }
 
   @override
@@ -68,7 +67,6 @@ class _MainIceState extends State<MainIce> {
                     padding: const EdgeInsets.all(4.0),
                     child: IceContainer(
                       info: infos[index],
-                      repository: repository,
                       onEdit: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

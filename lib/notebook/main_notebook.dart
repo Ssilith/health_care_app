@@ -4,8 +4,7 @@ import 'package:health_care_app/blank_scaffold.dart';
 import 'package:health_care_app/model/notebook.dart';
 import 'package:health_care_app/notebook/insert_pdf_page.dart';
 import 'package:health_care_app/notebook/notebook_container.dart';
-import 'package:health_care_app/services/repository.dart';
-import 'package:health_care_app/services/repository_impl.dart';
+import 'package:health_care_app/services/notebook_service.dart';
 import 'package:health_care_app/notebook/notebook_form.dart';
 
 class MainNotebook extends StatefulWidget {
@@ -16,14 +15,14 @@ class MainNotebook extends StatefulWidget {
 }
 
 class _MainNotebookState extends State<MainNotebook> {
-  final Repository repository = RepositoryImpl();
+  final NotebookService notebookService = NotebookService();
   List<Notebook> notes = [];
   Future? getNotes;
 
   @override
   void initState() {
     super.initState();
-    getNotes = repository.getNotes();
+    getNotes = notebookService.getAllNotes();
   }
 
   @override
@@ -98,7 +97,6 @@ class _MainNotebookState extends State<MainNotebook> {
                     padding: const EdgeInsets.all(4.0),
                     child: NotebookContainer(
                       note: notes[index],
-                      repository: repository,
                       onEdit: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

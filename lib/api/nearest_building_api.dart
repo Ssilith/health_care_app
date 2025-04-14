@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:health_care_app/model/building.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -82,20 +83,4 @@ List<Building> parseBuilding(String responseBody) {
   }
 
   return building;
-}
-
-class Building {
-  final LatLng location;
-  final String? name;
-  final String? address;
-  final String? phone;
-  final String? website;
-
-  Building({
-    required this.location,
-    required this.name,
-    required this.address,
-    required this.phone,
-    required this.website,
-  });
 }
