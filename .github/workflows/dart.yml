@@ -1,10 +1,11 @@
 name: Dart
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,7 +28,7 @@ jobs:
       - name: Run Flutter tests on mobile and capture output
         run: |
           mkdir -p files
-          flutter test --dart-define=BENCHMARK_REPEAT=10 > mobile_test_output.log
+          flutter test --dart-define=BENCHMARK_REPEAT=1000 > mobile_test_output.log
 
       - name: Extract mobile benchmark report from log
         run: |
@@ -67,7 +68,7 @@ jobs:
       - name: Run Flutter tests on Web and capture output
         run: |
           mkdir -p files
-          flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10 > web_test_output.log
+          flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=1000 > web_test_output.log
 
       - name: Extract Web benchmark report from log
         run: |
