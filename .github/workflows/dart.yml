@@ -10,8 +10,8 @@ permissions:
   contents: write
 
 jobs:
-  test-vm:
-    name: Run Flutter tests on VM
+  test-mobile:
+    name: Run Flutter tests on mobile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,20 +24,23 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Flutter tests on VM
-        run: flutter test --dart-define=BENCHMARK_REPEAT=10
-
-      - name: Move Benchmark Report
+      - name: Run Flutter tests on mobile and capture output
         run: |
           mkdir -p files
-          mv global_benchmark_report_*.json files/
+          flutter test --dart-define=BENCHMARK_REPEAT=10 > mobile_test_output.log
 
-      - name: Commit and Push Benchmark Report
+      - name: Extract mobile benchmark report from log
+        run: |
+          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' mobile_test_output.log | sed '1d;$d' > files/mobile_benchmark_report.json
+          echo "Extracted mobile Report:"
+          cat files/mobile_benchmark_report.json
+
+      - name: Commit and Push mobile Benchmark Report
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git add files/
-          git commit -m "Add VM benchmark report"
+          git add files/mobile_benchmark_report.json
+          git commit -m "Add mobile benchmark report"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,11 +62,11 @@ jobs:
       - name: Run Flutter tests on Web and capture output
         run: |
           mkdir -p files
-          flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10 > test_output.log
+          flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=10 > web_test_output.log
 
-      - name: Extract benchmark report from log
+      - name: Extract Web benchmark report from log
         run: |
-          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' test_output.log | sed '1d;$d' > files/web_benchmark_report.json
+          awk '/BENCHMARK_REPORT_START/,/BENCHMARK_REPORT_END/' web_test_output.log | sed '1d;$d' > files/web_benchmark_report.json
           echo "Extracted Web Report:"
           cat files/web_benchmark_report.json
 
