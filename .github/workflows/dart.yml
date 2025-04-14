@@ -48,3 +48,23 @@ jobs:
         with:
           name: benchmark-report-web
           path: global_benchmark_report_*.json
+
+  collect-artifacts:
+    name: Collect Benchmark Reports
+    runs-on: ubuntu-latest
+    needs: [test-vm, test-web]
+    steps:
+      - name: Download VM Benchmark Report
+        uses: actions/download-artifact@v3
+        with:
+          name: benchmark-report-vm
+          path: artifacts/vm
+
+      - name: Download Web Benchmark Report
+        uses: actions/download-artifact@v3
+        with:
+          name: benchmark-report-web
+          path: artifacts/web
+
+      - name: List Downloaded Files
+        run: ls -R artifacts
