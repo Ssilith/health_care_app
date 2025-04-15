@@ -13,11 +13,18 @@ Future<Map<String, dynamic>> runBenchmark(
   required String testName,
 }) async {
   final List<int> timings = [];
+  final List<String> errors = [];
+
   for (int i = 0; i < iterations; i++) {
     final stopwatch = Stopwatch()..start();
-    await action();
-    stopwatch.stop();
-    timings.add(stopwatch.elapsedMilliseconds);
+    try {
+      await action();
+    } catch (e, _) {
+      errors.add("Iteration $i failed: $e");
+    } finally {
+      stopwatch.stop();
+      timings.add(stopwatch.elapsedMilliseconds);
+    }
   }
   final totalMs = timings.fold(0, (int sum, int t) => sum + t);
   final avgMs = totalMs / iterations;
@@ -27,10 +34,11 @@ Future<Map<String, dynamic>> runBenchmark(
     'totalMilliseconds': totalMs,
     'averageMilliseconds': avgMs,
     'timings': timings,
+    'errorCount': errors.length,
+    'errors': errors,
   };
 
   globalBenchmarkReports.add(report);
-
   return report;
 }
 
