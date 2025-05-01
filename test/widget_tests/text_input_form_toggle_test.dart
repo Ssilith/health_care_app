@@ -21,19 +21,19 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('visibilityToggle')), findsOneWidget);
-
-    final editableText = tester.widget<EditableText>(find.byType(EditableText));
-    expect(editableText.obscureText, isTrue);
+    final initialText = tester.widget<EditableText>(find.byType(EditableText));
+    expect(initialText.obscureText, isTrue);
 
     await runPerf(() async {
-      await tester.tap(find.byKey(const Key('visibilityToggle')));
+      final toggleButton = find.byKey(const Key('visibilityToggle'));
+      final toggleRect = tester.getRect(toggleButton);
+      await tester.tapAt(toggleRect.center);
+      await tester.pump(const Duration(milliseconds: 200));
       await tester.pumpAndSettle();
-
-      final updatedEditableText = tester.widget<EditableText>(
+      final updatedText = tester.widget<EditableText>(
         find.byType(EditableText),
       );
-      expect(updatedEditableText.obscureText, isFalse);
+      expect(updatedText.obscureText, isFalse);
     }, name: 'widget_textinput_obscure_toggle');
   });
 }

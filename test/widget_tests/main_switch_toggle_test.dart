@@ -23,14 +23,17 @@ void main() {
     await tester.pumpAndSettle();
 
     await runPerf(() async {
-      final switchRect = tester.getRect(find.byKey(const Key('mainSwitch')));
+      final switchWidget = find.byKey(const Key('mainSwitch'));
+      final switchRect = tester.getRect(switchWidget);
 
-      final tapPoint = Offset(
-        switchRect.left + switchRect.width * 0.25,
-        switchRect.center.dy,
+      expect(switchWidget, findsOneWidget);
+
+      await tester.timedDrag(
+        switchWidget,
+        Offset(switchRect.width * 0.5, 0),
+        const Duration(milliseconds: 100),
       );
 
-      await tester.tapAt(tapPoint);
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
       expect(state, isFalse);
