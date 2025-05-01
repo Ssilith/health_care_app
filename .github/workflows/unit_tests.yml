@@ -61,22 +61,22 @@ jobs:
         fi
 
         set +e
-        $CMD | tee test_output.log
+        $CMD | tee unit_output.log
         EXIT=${PIPESTATUS[0]}
         set -e
 
-        awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log | \
-          sed '1d;$d' > perf/benchmark_${{ matrix.target }}_${TS}.json || true
+        awk '/PERF_REPORT_START/,/PERF_REPORT_END/' unit_output.log | \
+          sed '1d;$d' > perf/unit_${{ matrix.target }}_${TS}.json || true
 
         if [[ $EXIT -ne 0 ]]; then
-          echo "==== flutter test failed on ${{ matrix.target }} ===="
-          cat test_output.log
+          echo "==== unit test failed on ${{ matrix.target }} ===="
+          cat unit_output.log
         fi
         exit $EXIT
 
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: benchmark-${{ matrix.target }}-${{ env.TS }}
-        path: perf/benchmark_${{ matrix.target }}_${{ env.TS }}.json
+        name: unit-${{ matrix.target }}-${{ env.TS }}
+        path: perf/unit${{ matrix.target }}_${{ env.TS }}.json
         if-no-files-found: warn 

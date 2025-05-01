@@ -25,8 +25,10 @@ void main() {
     );
 
     await runPerf(() async {
-      final confirmBtn = find.text('Confirm').hitTestable();
-      await tester.tap(confirmBtn, warnIfMissed: false);
+      final back = find.byKey(const Key('popupConfirmBtn'));
+      await tester.ensureVisible(back);
+      await tester.tap(back);
+      await tester.pumpAndSettle();
       expect(confirmed, isTrue);
     }, name: 'widget_popup_confirm');
   });

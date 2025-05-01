@@ -34,6 +34,7 @@ class _MainSwitchState extends State<MainSwitch> {
   @override
   Widget build(BuildContext context) {
     return AnimatedToggleSwitch<bool>.dual(
+      key: const Key('mainSwitch'),
       current: current,
       style: ToggleStyle(
         backgroundColor: Colors.white.withValues(alpha: 0.2),

@@ -12,11 +12,11 @@ void main() {
     );
 
     await runPerf(() async {
-      final backButton =
-          find.byKey(const ValueKey('blankBackBtn')).hitTestable();
-      expect(backButton, findsOneWidget);
-
-      await tester.tap(backButton, warnIfMissed: false);
+      final back = find.byKey(const Key('backButton'));
+      await tester.ensureVisible(back);
+      await tester.tap(back);
+      await tester.pumpAndSettle();
+      expect(back, findsOneWidget);
     }, name: 'widget_blank_scaffold_pop');
   });
 }

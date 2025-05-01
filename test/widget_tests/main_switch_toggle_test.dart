@@ -1,4 +1,3 @@
-import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/appointments/main_switch.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +21,9 @@ void main() {
     );
 
     await runPerf(() async {
-      await tester.tap(
-        find.byType(AnimatedToggleSwitch<bool>),
-        warnIfMissed: false,
-      );
+      final switchFinder = find.byKey(const Key('mainSwitch'));
+      await tester.ensureVisible(switchFinder);
+      await tester.tap(switchFinder);
       await tester.pumpAndSettle();
       expect(state, isFalse);
     }, name: 'widget_main_switch_toggle');
