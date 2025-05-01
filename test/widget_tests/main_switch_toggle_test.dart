@@ -24,7 +24,7 @@ void main() {
       final switchFinder = find.byKey(const Key('mainSwitch'));
       await tester.ensureVisible(switchFinder);
       await tester.tap(switchFinder);
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 2));
       expect(state, isFalse);
     }, name: 'widget_main_switch_toggle');
   });

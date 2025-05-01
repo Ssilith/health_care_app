@@ -28,7 +28,7 @@ void main() {
       final back = find.byKey(const Key('popupConfirmBtn'));
       await tester.ensureVisible(back);
       await tester.tap(back);
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 2));
       expect(confirmed, isTrue);
     }, name: 'widget_popup_confirm');
   });

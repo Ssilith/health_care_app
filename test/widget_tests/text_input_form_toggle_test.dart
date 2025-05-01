@@ -21,7 +21,10 @@ void main() {
 
     await runPerf(() async {
       expect(find.text('secret'), findsNothing);
-      await tester.tap(find.byIcon(Icons.visibility_off), warnIfMissed: false);
+      await tester.tap(
+        find.byKey(const Key('visibilityToggle')),
+        warnIfMissed: false,
+      );
       await tester.pump();
       expect(find.text('secret'), findsOneWidget);
     }, name: 'widget_textinput_obscure_toggle');
