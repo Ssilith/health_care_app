@@ -13,8 +13,13 @@ import 'widget_tests/navigate_to_copy_test.dart' as copy_test;
 import 'widget_tests/search_bar_filter_test.dart' as search_bar;
 
 import 'utils/benchmark_helper.dart';
+import 'widget_tests/utils/firebase_test_setup.dart';
 
 void main() {
+  setUpAll(() async {
+    await setupFirebaseForTests();
+  });
+
   group('All Widget Tests', () {
     appt_smoke.main();
     notebook_val.main();

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/notebook.dart';
 import 'package:health_care_app/services/insert_pdf_service.dart';
-import '../../utils/benchmark_helper.dart';
-import '../utils/fakes_and_mocks.dart';
+import '../utils/benchmark_helper.dart';
+import 'utils/fakes_and_mocks.dart';
 
 void main() {
   group('InsertPdfService Tests', () {

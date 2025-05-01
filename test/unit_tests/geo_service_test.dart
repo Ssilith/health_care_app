@@ -4,8 +4,8 @@ import 'package:health_care_app/model/building.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:location/location.dart';
-import '../../utils/benchmark_helper.dart';
-import '../utils/fakes_and_mocks.dart';
+import '../utils/benchmark_helper.dart';
+import 'utils/fakes_and_mocks.dart';
 
 void main() {
   group('GeoService Tests', () {
