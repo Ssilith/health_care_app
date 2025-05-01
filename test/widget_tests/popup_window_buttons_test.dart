@@ -24,11 +24,16 @@ void main() {
       settle: true,
     );
 
+    await tester.pumpAndSettle(const Duration(milliseconds: 500));
+    expect(find.text('Confirm'), findsOneWidget);
+
     await runPerf(() async {
-      final back = find.byKey(const Key('popupConfirmBtn'));
-      await tester.ensureVisible(back);
-      await tester.tap(back);
-      await tester.pumpAndSettle(const Duration(seconds: 2));
+      final confirmButton = find.text('Confirm');
+      expect(confirmButton, findsOneWidget);
+      await tester.ensureVisible(confirmButton);
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(confirmButton);
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(confirmed, isTrue);
     }, name: 'widget_popup_confirm');
   });

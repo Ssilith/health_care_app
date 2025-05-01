@@ -19,13 +19,13 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('visibilityToggle')), findsOneWidget);
+
     await runPerf(() async {
       expect(find.text('secret'), findsNothing);
-      await tester.tap(
-        find.byKey(const Key('visibilityToggle')),
-        warnIfMissed: false,
-      );
-      await tester.pump();
+      await tester.tap(find.byKey(const Key('visibilityToggle')));
+      await tester.pumpAndSettle();
       expect(find.text('secret'), findsOneWidget);
     }, name: 'widget_textinput_obscure_toggle');
   });

@@ -20,11 +20,17 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle(const Duration(milliseconds: 500));
+    expect(find.text('LIST'), findsOneWidget);
+    expect(find.text('CAL'), findsOneWidget);
+
     await runPerf(() async {
-      final switchFinder = find.byKey(const Key('mainSwitch'));
-      await tester.ensureVisible(switchFinder);
-      await tester.tap(switchFinder);
-      await tester.pumpAndSettle(const Duration(seconds: 2));
+      final listText = find.text('LIST');
+      expect(listText, findsOneWidget);
+      await tester.ensureVisible(listText);
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(listText);
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       expect(state, isFalse);
     }, name: 'widget_main_switch_toggle');
   });
