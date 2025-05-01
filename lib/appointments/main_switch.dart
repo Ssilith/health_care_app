@@ -19,10 +19,10 @@ class MainSwitch extends StatefulWidget {
   });
 
   @override
-  State<MainSwitch> createState() => MainSwitchState();
+  State<MainSwitch> createState() => _MainSwitchState();
 }
 
-class MainSwitchState extends State<MainSwitch> {
+class _MainSwitchState extends State<MainSwitch> {
   late bool current;
 
   @override

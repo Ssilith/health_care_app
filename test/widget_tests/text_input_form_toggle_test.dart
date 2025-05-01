@@ -9,12 +9,9 @@ void main() {
   testWidgets('TextInputForm toggles obscured text', (tester) async {
     final controller = TextEditingController(text: 'secret');
 
-    final formKey = GlobalKey<TextInputFormState>();
-
     await pumpWithMaterial(
       tester,
       TextInputForm(
-        key: formKey,
         width: 300,
         hint: 'Password',
         controller: controller,
@@ -24,12 +21,19 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('secret'), findsNothing);
+    expect(find.byKey(const Key('visibilityToggle')), findsOneWidget);
+
+    final editableText = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editableText.obscureText, isTrue);
 
     await runPerf(() async {
-      formKey.currentState!.toggleObscured();
+      await tester.tap(find.byKey(const Key('visibilityToggle')));
       await tester.pumpAndSettle();
-      expect(find.text('secret'), findsOneWidget);
+
+      final updatedEditableText = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
+      expect(updatedEditableText.obscureText, isFalse);
     }, name: 'widget_textinput_obscure_toggle');
   });
 }

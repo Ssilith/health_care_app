@@ -18,13 +18,13 @@ class TextInputForm extends StatefulWidget {
   });
 
   @override
-  State<TextInputForm> createState() => TextInputFormState();
+  State<TextInputForm> createState() => _TextInputFormState();
 }
 
-class TextInputFormState extends State<TextInputForm> {
+class _TextInputFormState extends State<TextInputForm> {
   bool _obscured = true;
 
-  void toggleObscured() {
+  void _toggleObscured() {
     setState(() => _obscured = !_obscured);
   }
 
@@ -55,7 +55,7 @@ class TextInputFormState extends State<TextInputForm> {
             IconButton(
               key: const Key('visibilityToggle'),
               icon: Icon(_obscured ? Icons.visibility_off : Icons.visibility),
-              onPressed: toggleObscured,
+              onPressed: _toggleObscured,
             ),
         ],
       ),

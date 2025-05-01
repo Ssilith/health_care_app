@@ -8,12 +8,9 @@ void main() {
   testWidgets('MainSwitch toggles value and calls callback', (tester) async {
     var state = true;
 
-    final switchKey = GlobalKey<MainSwitchState>();
-
     await pumpWithMaterial(
       tester,
       MainSwitch(
-        key: switchKey,
         current: state,
         firstTitle: 'LIST',
         secondTitle: 'CAL',
@@ -26,13 +23,15 @@ void main() {
     await tester.pumpAndSettle();
 
     await runPerf(() async {
-      switchKey.currentState?.setState(() {
-        switchKey.currentState?.current = false;
-      });
-      await tester.pumpAndSettle();
+      final switchRect = tester.getRect(find.byKey(const Key('mainSwitch')));
 
-      switchKey.currentState?.widget.onChanged(false);
-      await tester.pumpAndSettle();
+      final tapPoint = Offset(
+        switchRect.left + switchRect.width * 0.25,
+        switchRect.center.dy,
+      );
+
+      await tester.tapAt(tapPoint);
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
       expect(state, isFalse);
     }, name: 'widget_main_switch_toggle');
