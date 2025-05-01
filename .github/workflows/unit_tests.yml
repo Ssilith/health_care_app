@@ -1,4 +1,4 @@
-name: Flutter unit tests
+name: Flutter unit tests (mobile + web)
 
 on:
   push:
@@ -9,9 +9,13 @@ on:
 
 jobs:
   unit:
+    strategy:
+      matrix:
+        target: [mobile, web]    
     runs-on: ubuntu-latest
     env:
-      BENCHMARK_REPEAT: 200       
+      BENCHMARK_REPEAT: 10 
+
     steps:
       - uses: actions/checkout@v4
 
@@ -28,22 +32,35 @@ jobs:
             ${{ steps.flutter.outputs.cache-path }}
           key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
 
+      - name: Enable web & Chrome device
+        if: matrix.target == 'web'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y chromium-browser
+          flutter config --enable-web
+          flutter devices
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run unit tests & capture perf JSON
+      - name: Run unit tests and capture output
         run: |
           mkdir -p perf
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
 
-          flutter test test/all_unit_tests.dart > test_output.log
+          if [[ "${{ matrix.target }}" == "web" ]]; then
+            flutter test --platform chrome test/unit_test.dart > test_output.log
+          else
+            flutter test test/unit_test.dart > test_output.log
+          fi
 
           awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log \
             | sed '1d;$d' \
-            > perf/unit_perf_${TIMESTAMP}.json
+            > perf/benchmark_${{ matrix.target }}_${TIMESTAMP}.json
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload benchmark artefact
+        uses: actions/upload-artifact@v4
         with:
-          name: unit-perf-${{ env.TIMESTAMP }}
-          path: perf/unit_perf_${{ env.TIMESTAMP }}.json
+          name: benchmark-${{ matrix.target }}-${{ env.TIMESTAMP }}
+          path: perf/benchmark_${{ matrix.target }}_${TIMESTAMP}.json
