@@ -55,9 +55,9 @@ jobs:
         echo "TS=$TS" >> $GITHUB_ENV
 
         if [[ "${{ matrix.target }}" == "web" ]]; then
-          CMD="flutter test --platform chrome test/unit_test.dart"
+          CMD="flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/unit_test.dart"
         else
-          CMD="flutter test test/unit_test.dart"
+          CMD="flutter test --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/unit_test.dart"
         fi
 
         set +e
@@ -78,5 +78,5 @@ jobs:
       if: always()
       with:
         name: unit-${{ matrix.target }}-${{ env.TS }}
-        path: perf/unit${{ matrix.target }}_${{ env.TS }}.json
+        path: perf/unit_${{ matrix.target }}_${{ env.TS }}.json
         if-no-files-found: warn 

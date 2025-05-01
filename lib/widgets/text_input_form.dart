@@ -53,6 +53,7 @@ class _TextInputFormState extends State<TextInputForm> {
           ),
           if (widget.hideText)
             IconButton(
+              key: const Key('visibilityToggle'),
               icon: Icon(_obscured ? Icons.visibility_off : Icons.visibility),
               onPressed: _toggleObscured,
             ),

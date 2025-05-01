@@ -50,11 +50,6 @@ class _MainSwitchState extends State<MainSwitch> {
         setState(() => current = b);
         widget.onChanged(current);
       },
-      onTap: (c) {
-        setState(() => current = !current);
-        widget.onChanged(current);
-      },
-
       iconBuilder:
           (value) =>
               !value

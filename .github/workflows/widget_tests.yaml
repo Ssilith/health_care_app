@@ -18,9 +18,6 @@ jobs:
       matrix:
         target: [mobile, web]
 
-    env:
-      BENCHMARK_REPEAT: 10
-
     steps:
     - uses: actions/checkout@v4
 
@@ -57,9 +54,9 @@ jobs:
         echo "TS=$TS" >> $GITHUB_ENV
 
         if [[ "${{ matrix.target }}" == "web" ]]; then
-          CMD="flutter test --platform chrome test/widget_test.dart"
+          CMD="flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/widget_test.dart"
         else
-          CMD="flutter test test/widget_test.dart"
+          CMD="flutter test --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/widget_test.dart"
         fi
 
         set +e

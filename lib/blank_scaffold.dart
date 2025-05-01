@@ -78,7 +78,7 @@ class _BlankScaffoldState extends State<BlankScaffold>
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).maybePop(),
               ),
             ),
         ],
