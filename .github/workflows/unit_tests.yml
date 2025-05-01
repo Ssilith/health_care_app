@@ -56,7 +56,7 @@ jobs:
         if [[ "${{ matrix.target }}" == "web" ]]; then
           CMD="flutter test --platform chrome test/unit_test.dart"
         else
-          CMD="flutter test --platform mobile test/unit_test.dart"
+          CMD="flutter test test/unit_test.dart"
         fi
 
         set +e
