@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
+
 import 'process_info_web.dart' if (dart.library.io) 'process_info_io.dart';
 
 const int _defaultRepeat = int.fromEnvironment(
@@ -39,22 +41,22 @@ Future<void> runPerf(
     timings.map((t) => math.pow(t - avg, 2)).reduce((a, b) => a + b) / repeat,
   );
 
-  int rssKb = 0;
-  try {
-    rssKb = getRssKb();
-  } catch (_) {
-    rssKb = -1;
-  }
-
   final report = {
     'test': name,
     'repeat': repeat,
     'avg_us': avg,
     'p95_us': p95,
     'stdev_us': stdev,
-    'rss_kb': rssKb,
     'failures': failures,
+    'platform': kIsWeb ? 'web' : 'mobile',
   };
+
+  if (kIsWeb) {
+    report['js_allocation_time_ms'] = await customMemoryBenchmark();
+  } else {
+    report['rss_kb'] = getRssKb();
+  }
+
   globalPerfReports.add(report);
 }
 
@@ -62,4 +64,17 @@ void dumpPerfReports() {
   print('PERF_REPORT_START');
   print(jsonEncode(globalPerfReports));
   print('PERF_REPORT_END');
+}
+
+Future<int> customMemoryBenchmark() async {
+  final start = DateTime.now().millisecondsSinceEpoch;
+
+  final list = <List<int>>[];
+  for (int i = 0; i < 100; i++) {
+    list.add(List.filled(10000, i));
+    await Future.delayed(Duration.zero);
+  }
+
+  final end = DateTime.now().millisecondsSinceEpoch;
+  return end - start;
 }
