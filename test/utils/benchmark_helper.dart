@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
-import 'process_info_stub.dart' if (dart.library.io) 'process_info_io.dart';
+import 'process_info_web.dart' if (dart.library.io) 'process_info_io.dart';
 
 const int _defaultRepeat = int.fromEnvironment(
   'BENCHMARK_REPEAT',
