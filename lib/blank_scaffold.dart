@@ -66,6 +66,7 @@ class _BlankScaffoldState extends State<BlankScaffold>
               top: 30,
               left: 15,
               child: IconButton(
+                key: const ValueKey('blankBackBtn'),
                 icon: Ink(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,

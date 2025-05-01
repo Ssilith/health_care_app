@@ -4,22 +4,19 @@ import '../utils/benchmark_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'utils/pump_widget.dart';
+
 void main() {
   testWidgets('NavigateToContainer copies text', (tester) async {
     const text = 'clinic name';
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: NavigateToContainer(
-          icon: Icons.person,
-          title: 'Name',
-          mess: text,
-        ),
-      ),
+    await pumpWithMaterial(
+      tester,
+      NavigateToContainer(icon: Icons.person, title: 'Name', mess: text),
     );
 
     await runPerf(() async {
-      await tester.tap(find.byIcon(Icons.copy));
+      await tester.tap(find.byIcon(Icons.copy), warnIfMissed: false);
       final data = await Clipboard.getData('text/plain');
       expect(data?.text, text);
     }, name: 'widget_navigate_copy');

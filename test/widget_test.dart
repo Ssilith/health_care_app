@@ -16,9 +16,7 @@ import 'utils/benchmark_helper.dart';
 import 'widget_tests/utils/firebase_test_setup.dart';
 
 void main() {
-  setUpAll(() async {
-    await setupFirebaseForTests();
-  });
+  setUpAll(() async => await setupFirebaseForTests());
 
   group('All Widget Tests', () {
     appt_smoke.main();

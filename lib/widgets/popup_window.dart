@@ -57,6 +57,7 @@ class PopupWindow extends StatelessWidget {
               SizedBox(
                 width: 120,
                 child: RectangularButton(
+                  key: const ValueKey('popupConfirmBtn'),
                   onPressed: onPressed,
                   isLoading: false,
                   title: "Confirm",
