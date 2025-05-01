@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 
-import 'process_info_web.dart' if (dart.library.io) 'process_info_io.dart';
-
 const int _defaultRepeat = int.fromEnvironment(
   'BENCHMARK_REPEAT',
   defaultValue: 100,
@@ -51,12 +49,6 @@ Future<void> runPerf(
     'platform': kIsWeb ? 'web' : 'mobile',
   };
 
-  if (kIsWeb) {
-    report['js_allocation_time_ms'] = await customMemoryBenchmark();
-  } else {
-    report['rss_kb'] = getRssKb();
-  }
-
   globalPerfReports.add(report);
 }
 
@@ -64,17 +56,4 @@ void dumpPerfReports() {
   print('PERF_REPORT_START');
   print(jsonEncode(globalPerfReports));
   print('PERF_REPORT_END');
-}
-
-Future<int> customMemoryBenchmark() async {
-  final start = DateTime.now().millisecondsSinceEpoch;
-
-  final list = <List<int>>[];
-  for (int i = 0; i < 100; i++) {
-    list.add(List.filled(10000, i));
-    await Future.delayed(Duration.zero);
-  }
-
-  final end = DateTime.now().millisecondsSinceEpoch;
-  return end - start;
 }
