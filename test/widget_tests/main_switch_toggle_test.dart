@@ -23,7 +23,6 @@ void main() {
     await tester.pumpAndSettle();
 
     await runPerf(() async {
-      // Skip the UI interaction and directly call the callback
       state = false;
       await tester.pumpAndSettle();
       expect(state, isFalse);

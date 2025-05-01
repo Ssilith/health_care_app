@@ -9,7 +9,6 @@ void main() {
   testWidgets('TextInputForm toggles obscured text', (tester) async {
     final controller = TextEditingController(text: 'secret');
 
-    // Add widget key for easier access
     final widgetKey = GlobalKey();
 
     await pumpWithMaterial(
