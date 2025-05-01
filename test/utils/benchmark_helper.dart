@@ -1,50 +1,57 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
-const int benchmarkRepeat = int.fromEnvironment(
+const int _defaultRepeat = int.fromEnvironment(
   'BENCHMARK_REPEAT',
   defaultValue: 100,
 );
 
-final List<Map<String, dynamic>> globalBenchmarkReports = [];
+final List<Map<String, dynamic>> globalPerfReports = [];
 
-Future<Map<String, dynamic>> runBenchmark(
+double _percentile(List<int> sorted, double p) =>
+    sorted[(p * (sorted.length - 1)).round()].toDouble();
+
+Future<void> runPerf(
   Future<void> Function() action, {
-  int iterations = benchmarkRepeat,
-  required String testName,
+  String name = 'unnamed',
+  int repeat = _defaultRepeat,
 }) async {
-  final List<int> timings = [];
-  final List<String> errors = [];
+  final timings = <int>[];
+  int failures = 0;
 
-  for (int i = 0; i < iterations; i++) {
-    final stopwatch = Stopwatch()..start();
+  for (int i = 0; i < repeat; i++) {
+    final sw = Stopwatch()..start();
     try {
       await action();
-    } catch (e, _) {
-      errors.add("Iteration $i failed: $e");
+    } catch (_) {
+      failures++;
     } finally {
-      stopwatch.stop();
-      timings.add(stopwatch.elapsedMilliseconds);
+      sw.stop();
+      timings.add(sw.elapsedMicroseconds);
     }
   }
-  final totalMs = timings.fold(0, (int sum, int t) => sum + t);
-  final avgMs = totalMs / iterations;
-  final report = {
-    'test': testName,
-    'iterations': iterations,
-    'totalMilliseconds': totalMs,
-    'averageMilliseconds': avgMs,
-    'timings': timings,
-    'errorCount': errors.length,
-    'errors': errors,
-  };
 
-  globalBenchmarkReports.add(report);
-  return report;
+  timings.sort();
+  final avg = timings.reduce((a, b) => a + b) / repeat;
+  final p95 = _percentile(timings, .95);
+
+  final report = {
+    'test': name,
+    'repeat': repeat,
+    'avg_us': avg,
+    'p95_us': p95,
+    'stdev_us': sqrt(
+      timings.map((t) => pow(t - avg, 2)).reduce((a, b) => a + b) / repeat,
+    ),
+    'rss_kb': ProcessInfo.currentRss / 1024,
+    'failures': failures,
+  };
+  globalPerfReports.add(report);
 }
 
-void outputBenchmarkReport(List<Map<String, dynamic>> reports) {
-  final jsonString = jsonEncode(reports);
-  print('BENCHMARK_REPORT_START');
-  print(jsonString);
-  print('BENCHMARK_REPORT_END');
+void dumpPerfReports() {
+  print('PERF_REPORT_START');
+  print(jsonEncode(globalPerfReports));
+  print('PERF_REPORT_END');
 }

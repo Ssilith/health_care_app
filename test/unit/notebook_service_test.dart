@@ -35,9 +35,9 @@ void main() {
 
       when(mockRepository.getNotes()).thenAnswer((_) => Future.value(notes));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await notebookService.getAllNotes();
-      }, testName: 'notebook_getAllNotes');
+      }, name: 'notebook_getAllNotes');
 
       reset(mockRepository);
       when(mockRepository.getNotes()).thenAnswer((_) => Future.value(notes));
@@ -61,9 +61,9 @@ void main() {
         mockRepository.addNote(newNote),
       ).thenAnswer((_) => Future.value(newNote));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await notebookService.addNote(newNote);
-      }, testName: 'notebook_addNote');
+      }, name: 'notebook_addNote');
 
       reset(mockRepository);
       when(
@@ -89,9 +89,9 @@ void main() {
         mockRepository.editNote(updatedNote),
       ).thenAnswer((_) => Future.value(updatedNote));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await notebookService.editNote(updatedNote);
-      }, testName: 'notebook_editNote');
+      }, name: 'notebook_editNote');
 
       reset(mockRepository);
       when(
@@ -107,9 +107,9 @@ void main() {
     test('deleteNote completes successfully', () async {
       when(mockRepository.deleteNote('1')).thenAnswer((_) => Future.value());
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await notebookService.deleteNote('1');
-      }, testName: 'notebook_deleteNote');
+      }, name: 'notebook_deleteNote');
 
       reset(mockRepository);
       when(mockRepository.deleteNote('1')).thenAnswer((_) => Future.value());

@@ -32,9 +32,9 @@ void main() {
           ),
         ).thenAnswer((_) => Future.value(userCredential));
 
-        await runBenchmark(() async {
+        await runPerf(() async {
           await authService.signUp('test@example.com', 'password', 'password');
-        }, testName: 'auth_signUp');
+        }, name: 'auth_signUp');
 
         reset(mockFirebaseAuth);
         when(
@@ -71,9 +71,9 @@ void main() {
           ),
         ).thenAnswer((_) => Future.value(userCredential));
 
-        await runBenchmark(() async {
+        await runPerf(() async {
           await authService.signIn('test@example.com', 'password');
-        }, testName: 'auth_signIn');
+        }, name: 'auth_signIn');
 
         reset(mockFirebaseAuth);
         when(
@@ -102,9 +102,9 @@ void main() {
           mockFirebaseAuth.sendPasswordResetEmail(email: 'test@example.com'),
         ).thenAnswer((_) => Future.value());
 
-        await runBenchmark(() async {
+        await runPerf(() async {
           await authService.resetPassword('test@example.com');
-        }, testName: 'auth_resetPassword');
+        }, name: 'auth_resetPassword');
 
         reset(mockFirebaseAuth);
         when(

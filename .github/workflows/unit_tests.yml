@@ -1,0 +1,49 @@
+name: Flutter unit tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    env:
+      BENCHMARK_REPEAT: 200       
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+        id: flutter
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ steps.flutter.outputs.cache-path }}
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run unit tests & capture perf JSON
+        run: |
+          mkdir -p perf
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+
+          flutter test test/all_unit_tests.dart > test_output.log
+
+          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log \
+            | sed '1d;$d' \
+            > perf/unit_perf_${TIMESTAMP}.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unit-perf-${{ env.TIMESTAMP }}
+          path: perf/unit_perf_${{ env.TIMESTAMP }}.json

@@ -38,9 +38,9 @@ void main() {
         "longitude": 100.0,
       });
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await geoService.findNearestPharmacy(locationData);
-      }, testName: 'geo_findNearestPharmacy');
+      }, name: 'geo_findNearestPharmacy');
 
       final buildings = await geoService.findNearestPharmacy(locationData);
 
@@ -81,9 +81,9 @@ void main() {
         "longitude": 101.0,
       });
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await geoService.findNearestHospital(locationData);
-      }, testName: 'geo_findNearestHospital');
+      }, name: 'geo_findNearestHospital');
 
       final buildings = await geoService.findNearestHospital(locationData);
 

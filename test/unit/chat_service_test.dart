@@ -23,9 +23,9 @@ void main() {
 
       final chatService = ChatService(client: client);
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await chatService.fetchChatGPTResponse("dummy prompt");
-      }, testName: 'chat_fetchChatGPTResponse');
+      }, name: 'chat_fetchChatGPTResponse');
 
       final response = await chatService.fetchChatGPTResponse("dummy prompt");
       expect(response, equals("Expected response"));
@@ -46,9 +46,9 @@ void main() {
 
       final chatService = ChatService(client: client);
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await chatService.sendPrompt("Hello");
-      }, testName: 'chat_sendPrompt');
+      }, name: 'chat_sendPrompt');
 
       final response = await chatService.sendPrompt("Hello");
       expect(response, equals("Prompt reply"));

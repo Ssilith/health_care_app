@@ -41,9 +41,9 @@ void main() {
         mockRepository.getAppointments(),
       ).thenAnswer((_) => Future.value(appointments));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await appointmentService.getAllAppointments();
-      }, testName: 'appointment_getAllAppointments');
+      }, name: 'appointment_getAllAppointments');
 
       reset(mockRepository);
       when(
@@ -71,9 +71,9 @@ void main() {
         mockRepository.addAppointment(newAppointment),
       ).thenAnswer((_) => Future.value(newAppointment));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await appointmentService.addAppointment(newAppointment);
-      }, testName: 'appointment_addAppointment');
+      }, name: 'appointment_addAppointment');
 
       reset(mockRepository);
       when(
@@ -101,9 +101,9 @@ void main() {
         mockRepository.editAppointment(updatedAppointment),
       ).thenAnswer((_) => Future.value(updatedAppointment));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await appointmentService.editAppointment(updatedAppointment);
-      }, testName: 'appointment_editAppointment');
+      }, name: 'appointment_editAppointment');
 
       reset(mockRepository);
       when(
@@ -123,9 +123,9 @@ void main() {
         mockRepository.deleteAppointment('1'),
       ).thenAnswer((_) => Future.value());
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await appointmentService.deleteAppointment('1');
-      }, testName: 'appointment_deleteAppointment');
+      }, name: 'appointment_deleteAppointment');
 
       reset(mockRepository);
       when(

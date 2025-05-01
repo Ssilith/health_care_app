@@ -22,9 +22,9 @@ void main() {
           filePickerUtils: fakeFilePickerUtils,
         );
 
-        await runBenchmark(() async {
+        await runPerf(() async {
           await insertPdfService.handlePdfAndCreateNote();
-        }, testName: 'insertPdf_handlePdfAndCreateNote');
+        }, name: 'insertPdf_handlePdfAndCreateNote');
 
         final Notebook? note = await insertPdfService.handlePdfAndCreateNote();
 

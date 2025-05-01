@@ -57,9 +57,9 @@ void main() {
         mockRepository.getIceInfos(),
       ).thenAnswer((_) => Future.value(dummyIceInfos));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await iceService.getAllIceInfos();
-      }, testName: 'ice_getAllIceInfos');
+      }, name: 'ice_getAllIceInfos');
 
       reset(mockRepository);
       when(
@@ -94,9 +94,9 @@ void main() {
         mockRepository.addIceInfo(newIceInfo),
       ).thenAnswer((_) => Future.value(newIceInfo));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await iceService.addIceInfo(newIceInfo);
-      }, testName: 'ice_addIceInfo');
+      }, name: 'ice_addIceInfo');
 
       reset(mockRepository);
       when(
@@ -131,9 +131,9 @@ void main() {
         mockRepository.editIceInfo(updatedIceInfo),
       ).thenAnswer((_) => Future.value(updatedIceInfo));
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await iceService.editIceInfo(updatedIceInfo);
-      }, testName: 'ice_editIceInfo');
+      }, name: 'ice_editIceInfo');
 
       reset(mockRepository);
       when(
@@ -149,9 +149,9 @@ void main() {
     test('deleteIceInfo completes successfully', () async {
       when(mockRepository.deleteIceInfo('1')).thenAnswer((_) => Future.value());
 
-      await runBenchmark(() async {
+      await runPerf(() async {
         await iceService.deleteIceInfo('1');
-      }, testName: 'ice_deleteIceInfo');
+      }, name: 'ice_deleteIceInfo');
 
       reset(mockRepository);
       when(mockRepository.deleteIceInfo('1')).thenAnswer((_) => Future.value());
