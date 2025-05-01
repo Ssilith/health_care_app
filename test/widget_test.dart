@@ -9,7 +9,6 @@ import 'widget_tests/chat_bubble_test.dart' as chat_bubble;
 import 'widget_tests/text_input_form_toggle_test.dart' as text_toggle;
 import 'widget_tests/rectangular_button_disabled_test.dart' as rect_btn;
 import 'widget_tests/popup_window_buttons_test.dart' as popup_btn;
-import 'widget_tests/navigate_to_copy_test.dart' as copy_test;
 import 'widget_tests/search_bar_filter_test.dart' as search_bar;
 
 import 'utils/benchmark_helper.dart';
@@ -28,7 +27,6 @@ void main() {
     text_toggle.main();
     rect_btn.main();
     popup_btn.main();
-    copy_test.main();
     search_bar.main();
   });
 
