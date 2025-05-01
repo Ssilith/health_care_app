@@ -4,7 +4,7 @@ import 'package:health_care_app/services/chat_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-import '../utils/benchmark_helper.dart';
+import '../../utils/benchmark_helper.dart';
 
 void main() {
   group('ChatService Tests', () {

@@ -87,6 +87,7 @@ dev_dependencies:
   mockito: ^5.4.5
   firebase_auth_mocks: ^0.14.1
   test_cov_console: ^0.2.2
+  golden_toolkit: ^0.15.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/model/appointment.dart';
 import 'package:health_care_app/services/appointment_service.dart';
 import 'package:mockito/mockito.dart';
-import '../utils/benchmark_helper.dart';
+import '../../utils/benchmark_helper.dart';
 import '../utils/mocks.mocks.dart';
 
 void main() {

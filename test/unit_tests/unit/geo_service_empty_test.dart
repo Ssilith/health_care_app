@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../utils/benchmark_helper.dart';
+import '../../utils/benchmark_helper.dart';
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
 import 'package:health_care_app/services/geo_service.dart';
