@@ -11,10 +11,10 @@ jobs:
   unit:
     strategy:
       matrix:
-        target: [mobile, web]    
+        target: [mobile, web]
     runs-on: ubuntu-latest
     env:
-      BENCHMARK_REPEAT: 10 
+      BENCHMARK_REPEAT: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
             ${{ steps.flutter.outputs.cache-path }}
           key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
 
-      - name: Enable web & Chrome device
+      - name: Enable web & install Chrome
         if: matrix.target == 'web'
         run: |
           sudo apt-get update -y
@@ -44,23 +44,44 @@ jobs:
         run: flutter pub get
 
       - name: Run unit tests and capture output
+        id: run_tests
         run: |
+          set -eo pipefail
           mkdir -p perf
+
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
 
+          # choose command per target
           if [[ "${{ matrix.target }}" == "web" ]]; then
-            flutter test --platform chrome test/unit_test.dart > test_output.log
+            CMD="flutter test --platform chrome"   # add path if you have a single file
           else
-            flutter test test/unit_test.dart > test_output.log
+            CMD="flutter test"                     # add path if you have a single file
           fi
 
+          # run tests, tee output so it’s both printed and captured
+          set +e
+          $CMD | tee test_output.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+
+          # always attempt to extract the JSON
           awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log \
             | sed '1d;$d' \
-            > perf/benchmark_${{ matrix.target }}_${TIMESTAMP}.json
+            > perf/benchmark_${{ matrix.target }}_${TIMESTAMP}.json || true
+
+          # if the tests failed, print the log for easier debugging
+          if [[ $EXIT_CODE -ne 0 ]]; then
+            echo "===== flutter test FAILED (exit $EXIT_CODE) ====="
+            cat test_output.log
+          fi
+
+          exit $EXIT_CODE   # propagate success/failure to the job outcome
 
       - name: Upload benchmark artefact
+        if: always()         # upload even if tests failed
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-${{ matrix.target }}-${{ env.TIMESTAMP }}
-          path: perf/benchmark_${{ matrix.target }}_${TIMESTAMP}.json
+          path: perf/benchmark_${{ matrix.target }}_${{ env.TIMESTAMP }}.json
+          if-no-files-found: warn
