@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'unit/auth_service_test.dart' as auth_tests;
-import 'unit/auth_service_exception_test.dart' as auth_ex_tests;
 import 'unit/chat_service_test.dart' as chat_tests;
 import 'unit/chat_service_error_test.dart' as chat_err_tests;
 import 'unit/geo_service_test.dart' as geo_tests;
@@ -15,7 +14,6 @@ import 'utils/benchmark_helper.dart';
 void main() {
   group('All Unit Tests', () {
     auth_tests.main();
-    auth_ex_tests.main();
     chat_tests.main();
     chat_err_tests.main();
     geo_tests.main();

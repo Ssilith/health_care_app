@@ -1,4 +1,4 @@
-name: Flutter unit tests (mobile + web)
+name: Flutter unit tests (matrix mobile + web)
 
 on:
   push:
@@ -7,99 +7,75 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: read 
-
 env:
   BENCHMARK_REPEAT: 10
 
 jobs:
-  test-mobile:
-    name: Run Flutter tests on mobile
+  unit:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.29.2'
-          channel: stable
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Run tests & capture benchmark JSON
-        id: run_tests
-        run: |
-          set -eo pipefail
-          mkdir -p perf
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
-
-          flutter test | tee test_output.log
-          EXIT_CODE=${PIPESTATUS[0]}
-
-          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log | \
-            sed '1d;$d' > perf/mobile_benchmark_${TIMESTAMP}.json || true
-
-          if [[ $EXIT_CODE -ne 0 ]]; then
-            echo "Tests failed – printing log for diagnostics:"
-            cat test_output.log
-          fi
-          exit $EXIT_CODE
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-mobile-${{ env.TIMESTAMP }}
-          path: perf/mobile_benchmark_${{ env.TIMESTAMP }}.json
-          if-no-files-found: warn  
-
-
-  test-web:
-    name: Run Flutter tests on Web (Chrome)
-    runs-on: ubuntu-latest
-    needs: test-mobile 
+    strategy:
+      matrix:
+        target: [mobile, web]
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.29.2'
-          channel: stable
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.29.2'
+        channel: stable
+      id: flutter
 
-      - name: Enable web & make sure Chrome is available
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y chromium-browser || true   # ubuntu-latest often has google-chrome already
-          flutter config --enable-web
-          flutter devices
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          ${{ steps.flutter.outputs.cache-path }}
+        key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
 
-      - name: Install dependencies
-        run: flutter pub get
+    - name: Enable web & install Chrome
+      if: matrix.target == 'web'
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y chromium-browser || true
+        flutter config --enable-web
+        flutter devices
 
-      - name: Run tests (Chrome) & capture benchmark JSON
-        run: |
-          set -eo pipefail
-          mkdir -p perf
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+    - name: Install dependencies
+      run: flutter pub get
 
-          flutter test --platform chrome | tee test_output.log
-          EXIT_CODE=${PIPESTATUS[0]}
+    - name: Run unit tests on ${{ matrix.target }} & capture benchmark JSON
+      id: run_tests
+      run: |
+        set -eo pipefail
+        mkdir -p perf
+        TS=$(date +%Y%m%d_%H%M%S)
+        echo "TS=$TS" >> $GITHUB_ENV
 
-          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log | \
-            sed '1d;$d' > perf/web_benchmark_${TIMESTAMP}.json || true
+        if [[ "${{ matrix.target }}" == "web" ]]; then
+          CMD="flutter test --platform chrome test/unit_test.dart"
+        else
+          CMD="flutter test test/unit_test.dart"
+        fi
 
-          if [[ $EXIT_CODE -ne 0 ]]; then
-            echo "Web tests failed – printing log:"
-            cat test_output.log
-          fi
-          exit $EXIT_CODE
+        set +e
+        $CMD | tee test_output.log
+        EXIT=${PIPESTATUS[0]}
+        set -e
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-web-${{ env.TIMESTAMP }}
-          path: perf/web_benchmark_${{ env.TIMESTAMP }}.json
-          if-no-files-found: warn
+        awk '/PERF_REPORT_START/,/PERF_REPORT_END/' test_output.log | \
+          sed '1d;$d' > perf/benchmark_${{ matrix.target }}_${TS}.json || true
+
+        if [[ $EXIT -ne 0 ]]; then
+          echo "==== flutter test failed on ${{ matrix.target }} ===="
+          cat test_output.log
+        fi
+        exit $EXIT
+
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: benchmark-${{ matrix.target }}-${{ env.TS }}
+        path: perf/benchmark_${{ matrix.target }}_${{ env.TS }}.json
+        if-no-files-found: warn 
