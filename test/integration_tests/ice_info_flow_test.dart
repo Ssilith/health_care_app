@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:health_care_app/ice/ice_form.dart';
 import 'package:health_care_app/ice/main_ice.dart';
+import 'package:health_care_app/model/ice_info.dart';
 import 'package:health_care_app/services/ice_service.dart';
 
 import '../utils/benchmark_helper.dart';
@@ -12,6 +14,23 @@ void main() {
     final mockRepo = MockRepository();
 
     final iceService = IceService.withRepository(mockRepo);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MainIce(iceService: iceService),
+        onGenerateRoute: (settings) {
+          if (settings.name == '/appointment_form') {
+            return MaterialPageRoute(
+              builder:
+                  (context) => IceForm(
+                    onChange: settings.arguments as Function(IceInfo),
+                  ),
+            );
+          }
+          return null;
+        },
+      ),
+    );
 
     await runPerf(() async {
       await tester.pumpWidget(

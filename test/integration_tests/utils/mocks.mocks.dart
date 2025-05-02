@@ -2,7 +2,7 @@
 // in health_care_app/test/integration_tests/utils/mocks.dart.
 // Do not manually edit this file.
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
+// ignore_for_file: no_leading_underscores_for_library_prefixes, duplicate_ignore
 import 'dart:async' as _i7;
 import 'dart:convert' as _i9;
 import 'dart:typed_data' as _i10;

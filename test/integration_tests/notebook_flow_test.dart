@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:health_care_app/model/notebook.dart';
 import 'package:health_care_app/notebook/main_notebook.dart';
+import 'package:health_care_app/notebook/notebook_form.dart';
 import 'package:health_care_app/services/notebook_service.dart';
 
 import '../utils/benchmark_helper.dart';
@@ -12,6 +14,24 @@ void main() {
     final mockRepo = MockRepository();
 
     final notebookService = NotebookService.withRepository(mockRepo);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MainNotebook(notebookService: notebookService),
+        onGenerateRoute: (settings) {
+          if (settings.name == '/notebook_form') {
+            return MaterialPageRoute(
+              builder:
+                  (context) => NotebookForm(
+                    onChange: settings.arguments as Function(Notebook),
+                  ),
+            );
+          }
+          // Handle other routes
+          return null;
+        },
+      ),
+    );
 
     await runPerf(() async {
       await tester.pumpWidget(

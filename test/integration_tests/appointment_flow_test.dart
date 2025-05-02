@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:health_care_app/appointments/appointment_form.dart';
 import 'package:health_care_app/appointments/main_appointments.dart';
+import 'package:health_care_app/model/appointment.dart';
 import 'package:health_care_app/services/appointment_service.dart';
 import 'package:mockito/mockito.dart';
 
@@ -18,6 +20,24 @@ void main() {
     when(mockAuth.currentUser).thenReturn(mockUser);
 
     final appointmentService = AppointmentService.withRepository(mockRepo);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MainAppointments(appointmentService: appointmentService),
+        onGenerateRoute: (settings) {
+          if (settings.name == '/appointment_form') {
+            return MaterialPageRoute(
+              builder:
+                  (context) => AppointmentForm(
+                    appointmentService: appointmentService,
+                    onChange: settings.arguments as Function(Appointment),
+                  ),
+            );
+          }
+          return null;
+        },
+      ),
+    );
 
     await runPerf(() async {
       await tester.pumpWidget(

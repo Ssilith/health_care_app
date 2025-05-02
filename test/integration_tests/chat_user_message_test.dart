@@ -13,6 +13,7 @@ import 'utils/mocks.mocks.dart';
 
 void main() {
   testWidgets('chat_user_message', (tester) async {
+    chat.clear();
     final mockClient = MockClient();
 
     when(
