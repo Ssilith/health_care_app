@@ -37,18 +37,6 @@ Future<void> runPerf(
     }
   }
 
-  // for (int i = 0; i < repeat; i++) {
-  //   final sw = Stopwatch()..start();
-  //   try {
-  //     await action();
-  //   } catch (_) {
-  //     failures++;
-  //   } finally {
-  //     sw.stop();
-  //     timings.add(sw.elapsedMicroseconds);
-  //   }
-  // }
-
   timings.sort();
   final avg = timings.reduce((a, b) => a + b) / repeat;
   final p95 = _percentile(timings, .95);

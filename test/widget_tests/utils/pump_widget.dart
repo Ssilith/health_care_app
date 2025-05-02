@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -6,13 +8,6 @@ Future<void> pumpWithMaterial(
   Widget child, {
   bool settle = false,
 }) async {
-  // await tester.pumpWidget(
-  //   MaterialApp(
-  //     debugShowCheckedModeBanner: false,
-  //     home: Scaffold(body: Center(child: child)),
-  //   ),
-  // );
-
   await tester.pumpWidget(
     MaterialApp(
       debugShowCheckedModeBanner: false,

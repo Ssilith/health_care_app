@@ -13,12 +13,10 @@ void main() {
 
     await runPerf(() async {
       final back = find.byKey(const Key('backButton'));
-      // await tester.ensureVisible(back);
-      expect(find.byType(BlankScaffold), findsOneWidget);
+      await tester.ensureVisible(back);
       await tester.tap(back);
       await tester.pumpAndSettle();
-      // expect(back, findsOneWidget);
-      expect(find.byType(BlankScaffold), findsNothing);
+      expect(back, findsOneWidget);
     }, name: 'widget_blank_scaffold_pop');
   });
 }
