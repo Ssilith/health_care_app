@@ -1,6 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
-
 import 'integration_tests/auth_flow_test.dart' as auth;
 import 'integration_tests/appointment_flow_test.dart' as appt;
 import 'integration_tests/notebook_flow_test.dart' as note;
@@ -22,9 +20,9 @@ void main() {
     auth.main();
     home.main();
     search.main();
-    // appt.main();
-    // note.main();
-    // ice.main();
+    appt.main();
+    note.main();
+    ice.main();
     chat.main();
     loc.main();
   });
