@@ -1,4 +1,4 @@
-name: Flutter widget tests (matrix mobile + web)
+name: Flutter widget tests (mobile + web)
 
 on:
   # push:

@@ -12,7 +12,7 @@ import 'widget_tests/popup_window_buttons_test.dart' as popup_btn;
 import 'widget_tests/search_bar_filter_test.dart' as search_bar;
 
 import 'utils/benchmark_helper.dart';
-import 'widget_tests/utils/firebase_test_setup.dart';
+import 'utils/firebase_test_setup.dart';
 
 void main() {
   setUpAll(() async => await setupFirebaseForTests());

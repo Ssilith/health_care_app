@@ -24,7 +24,5 @@ void main() {
     notebook_tests.main();
   });
 
-  tearDownAll(() {
-    dumpPerfReports();
-  });
+  tearDownAll(dumpPerfReports);
 }

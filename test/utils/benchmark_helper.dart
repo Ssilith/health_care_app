@@ -9,20 +9,22 @@ const int _defaultRepeat = int.fromEnvironment(
   defaultValue: 100,
 );
 
-final List<Map<String, dynamic>> globalPerfReports = [];
+final _reports = <Map<String, dynamic>>[];
 
-double _percentile(List<int> sorted, double p) =>
-    sorted[(p * (sorted.length - 1)).round()].toDouble();
+double _pct(List<int> data, double p) =>
+    data[(p * (data.length - 1)).round()].toDouble();
 
 Future<void> runPerf(
   Future<void> Function() action, {
   String name = 'unnamed',
   int repeat = _defaultRepeat,
+  Future<void> Function()? warmUp,
+  Map<String, Object?> extras = const {},
 }) async {
   final timings = <int>[];
   int failures = 0;
 
-  await action();
+  if (warmUp != null) await warmUp();
 
   for (int i = 0; i < repeat; i++) {
     final sw = Stopwatch();
@@ -39,9 +41,11 @@ Future<void> runPerf(
     }
   }
 
+  if (timings.isEmpty) timings.add(0);
+
   timings.sort();
   final avg = timings.reduce((a, b) => a + b) / repeat;
-  final p95 = _percentile(timings, .95);
+  final p95 = _pct(timings, .95);
   final stdev = math.sqrt(
     timings.map((t) => math.pow(t - avg, 2)).reduce((a, b) => a + b) / repeat,
   );
@@ -54,13 +58,14 @@ Future<void> runPerf(
     'stdev_us': stdev,
     'failures': failures,
     'platform': kIsWeb ? 'web' : 'mobile',
+    ...extras,
   };
 
-  globalPerfReports.add(report);
+  _reports.add(report);
 }
 
 void dumpPerfReports() {
   print('PERF_REPORT_START');
-  print(jsonEncode(globalPerfReports));
+  print(jsonEncode(_reports));
   print('PERF_REPORT_END');
 }
