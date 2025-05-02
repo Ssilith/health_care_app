@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health_care_app/services/auth_service.dart';
 
 import 'utils/mocks.mocks.dart';
@@ -25,10 +24,8 @@ void main() {
         mockAuth.createUserWithEmailAndPassword(email: mail, password: pwd),
       ).thenAnswer((_) async => fakeCred);
 
-      // act
       final result = await authService.signUp(mail, pwd, pwd);
 
-      // assert
       expect(result, fakeCred);
       verify(
         mockAuth.createUserWithEmailAndPassword(email: mail, password: pwd),
@@ -84,14 +81,13 @@ void main() {
   });
 
   group('getUser', () {
-    test('returns FirebaseAuth.instance.currentUser', () {
+    test('returns currentUser from injected FirebaseAuth', () {
       final fakeUser = MockUser();
-      when(FirebaseAuth.instance).thenReturn(mockAuth);
       when(mockAuth.currentUser).thenReturn(fakeUser);
-
       final user = authService.getUser();
-
       expect(user, fakeUser);
+
+      verify(mockAuth.currentUser).called(1);
     });
   });
 }
