@@ -43,9 +43,16 @@ void main() {
     when(mockAuth.currentUser).thenReturn(mockUser);
     when(mockAuth.signOut()).thenAnswer((_) async => {});
 
+    when(mockAuth.signOut()).thenAnswer((_) async {
+      when(mockAuth.currentUser).thenReturn(null);
+      return;
+    });
+
     await runPerf(() async {
       await tester.pumpWidget(const MaterialApp(home: MyHomePage()));
       await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byIcon(Icons.logout_outlined));
 
       await tester.tap(find.byIcon(Icons.logout_outlined));
       await tester.pumpAndSettle();
