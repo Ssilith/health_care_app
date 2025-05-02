@@ -6,21 +6,23 @@ import 'package:health_care_app/model/ice_info.dart';
 import 'package:health_care_app/services/ice_service.dart';
 
 class MainIce extends StatefulWidget {
-  const MainIce({super.key});
+  final IceService? iceService;
+  const MainIce({super.key, this.iceService});
 
   @override
   State<MainIce> createState() => _MainIceState();
 }
 
 class _MainIceState extends State<MainIce> {
-  final IceService iceService = IceService();
+  late IceService _iceService;
   List<IceInfo> infos = [];
   Future? getInfos;
 
   @override
   void initState() {
     super.initState();
-    getInfos = iceService.getAllIceInfos();
+    _iceService = widget.iceService ?? IceService();
+    getInfos = _iceService.getAllIceInfos();
   }
 
   @override

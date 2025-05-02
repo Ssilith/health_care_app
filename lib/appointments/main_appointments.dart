@@ -9,7 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MainAppointments extends StatefulWidget {
-  const MainAppointments({super.key});
+  final AppointmentService? appointmentService;
+  const MainAppointments({super.key, this.appointmentService});
 
   @override
   State<MainAppointments> createState() => _MainAppointmentsState();
@@ -22,14 +23,15 @@ class _MainAppointmentsState extends State<MainAppointments> {
   List selectedDayAppointments = [];
   List selectedAfterDayAppointments = [];
   Map groupedAfterDayAppointments = {};
-  final AppointmentService appointmentService = AppointmentService();
+  late AppointmentService _appointmentService;
   List<Appointment> appointments = [];
   Future? getAppointments;
 
   @override
   void initState() {
     super.initState();
-    getAppointments = appointmentService.getAllAppointments();
+    _appointmentService = widget.appointmentService ?? AppointmentService();
+    getAppointments = _appointmentService.getAllAppointments();
   }
 
   @override

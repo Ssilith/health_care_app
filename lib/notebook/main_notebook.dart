@@ -8,21 +8,23 @@ import 'package:health_care_app/services/notebook_service.dart';
 import 'package:health_care_app/notebook/notebook_form.dart';
 
 class MainNotebook extends StatefulWidget {
-  const MainNotebook({super.key});
+  final NotebookService? notebookService;
+  const MainNotebook({super.key, this.notebookService});
 
   @override
   State<MainNotebook> createState() => _MainNotebookState();
 }
 
 class _MainNotebookState extends State<MainNotebook> {
-  final NotebookService notebookService = NotebookService();
+  late NotebookService _notebookService;
   List<Notebook> notes = [];
   Future? getNotes;
 
   @override
   void initState() {
     super.initState();
-    getNotes = notebookService.getAllNotes();
+    _notebookService = widget.notebookService ?? NotebookService();
+    getNotes = _notebookService.getAllNotes();
   }
 
   @override

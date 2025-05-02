@@ -1,41 +1,42 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
-  final FirebaseAuth _auth;
+  final FirebaseAuth firebaseAuth;
 
   AuthService({FirebaseAuth? firebaseAuth})
-    : _auth = firebaseAuth ?? FirebaseAuth.instance;
+    : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<UserCredential> signUp(
     String email,
     String password,
-    String repeatPassword,
+    String confirmPassword,
   ) async {
-    if (password != repeatPassword) {
-      throw Exception("The passwords are not identical");
+    if (password != confirmPassword) {
+      throw Exception('Passwords do not match');
     }
-    return await _auth.createUserWithEmailAndPassword(
+
+    return await firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
   }
 
   Future<UserCredential> signIn(String email, String password) async {
-    return await _auth.signInWithEmailAndPassword(
+    return await firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
   }
 
   Future<void> resetPassword(String email) async {
-    return await _auth.sendPasswordResetEmail(email: email);
+    await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   Future<void> signOut() async {
-    return await _auth.signOut();
+    await firebaseAuth.signOut();
   }
 
   User? getUser() {
-    return FirebaseAuth.instance.currentUser;
+    return firebaseAuth.currentUser;
   }
 }

@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/appointments/main_appointments.dart';
+import 'package:health_care_app/services/appointment_service.dart';
+import 'package:mockito/mockito.dart';
 
 import '../utils/benchmark_helper.dart';
 import 'utils/hint_text_finder.dart';
+import 'utils/mock_repository.dart';
+import 'utils/mocks.mocks.dart';
 
 void main() {
   testWidgets('appointment_crud', (tester) async {
+    final mockRepo = MockRepository();
+    final mockAuth = MockFirebaseAuth();
+    final mockUser = MockUser();
+
+    when(mockAuth.currentUser).thenReturn(mockUser);
+
+    final appointmentService = AppointmentService.withRepository(mockRepo);
+
     await runPerf(() async {
-      await tester.pumpWidget(const MaterialApp(home: MainAppointments()));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MainAppointments(appointmentService: appointmentService),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.add));

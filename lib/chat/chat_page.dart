@@ -8,15 +8,22 @@ import 'package:health_care_app/widgets/text_input_form.dart';
 List<Message> chat = [];
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final ChatService? chatService;
+  const ChatPage({super.key, this.chatService});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final ChatService chatService = ChatService();
+  late ChatService _chatService;
   final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _chatService = widget.chatService ?? ChatService();
+  }
 
   sendMessage() async {
     if (_messageController.text.isNotEmpty) {
@@ -36,7 +43,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   getChatResponse(String message) async {
-    String response = await chatService.sendPrompt(message);
+    String response = await _chatService.sendPrompt(message);
     setState(() {
       chat.add(
         Message(
