@@ -65,7 +65,9 @@ class _MainAppointmentsState extends State<MainAppointments> {
               child: Text('An error occurred. Please try again later.'),
             );
           } else {
-            appointments = snapshot.data ?? [];
+            if (appointments.isEmpty && snapshot.hasData) {
+              appointments = List.of(snapshot.data!);
+            }
             if (appointments.isEmpty) {
               return const Center(child: Text('No appointments found.'));
             }

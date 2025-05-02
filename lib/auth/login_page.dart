@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       title: "Login",
       children: [
         TextInputForm(
+          key: Key('emailField'),
           width: size.width * 0.9,
           hint: 'E-mail',
           controller: email,
@@ -44,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         const SizedBox(height: 15),
         TextInputForm(
+          key: Key('passwordField'),
           width: size.width * 0.9,
           hint: 'Password',
           controller: password,

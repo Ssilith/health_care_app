@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 
 const int _defaultRepeat = int.fromEnvironment(
   'BENCHMARK_REPEAT',
-  defaultValue: 100,
+  defaultValue: 10,
 );
 
 final _reports = <Map<String, dynamic>>[];
@@ -32,8 +32,9 @@ Future<void> runPerf(
     try {
       sw.start();
       await action();
-    } catch (_) {
+    } catch (e, st) {
       failures++;
+      print('❌ $name run failed: $e\n$st');
       failed = true;
     } finally {
       sw.stop();
