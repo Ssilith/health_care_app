@@ -1,41 +1,97 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:health_care_app/auth/login_page_template.dart';
+import 'package:mockito/mockito.dart';
 
-import '../utils/benchmark_helper.dart';
-import 'utils/hint_text_finder.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:health_care_app/services/auth_service.dart';
+
+import 'utils/mocks.mocks.dart';
 
 void main() {
-  testWidgets('auth_flow', (tester) async {
-    await runPerf(() async {
-      await tester.pumpWidget(const MaterialApp(home: LoginPageTemplate()));
-      await tester.pumpAndSettle();
+  late MockFirebaseAuth mockAuth;
+  late AuthService authService;
 
-      // open sign‑up
-      await tester.tap(find.textContaining("DON'T HAVE"));
-      await tester.pumpAndSettle();
+  const mail = 'user@test.com';
+  const pwd = '123456';
 
-      // enter credentials & submit
-      await tester.enterText(find.byHintText('E-mail'), 'user@test.com');
-      await tester.enterText(find.byHintText('Password'), '123456');
-      await tester.enterText(find.byHintText('Repeat password'), '123456');
-      await tester.tap(find.text('SIGN UP'));
-      await tester.pumpAndSettle();
+  setUp(() {
+    mockAuth = MockFirebaseAuth();
+    authService = AuthService(firebaseAuth: mockAuth);
+  });
 
-      // switch back to log‑in
-      await tester.tap(find.textContaining('WANT TO LOG IN'));
-      await tester.pumpAndSettle();
+  group('AuthService - signUp', () {
+    test('creates user when passwords match', () async {
+      final fakeCred = MockUserCredential();
+      when(
+        mockAuth.createUserWithEmailAndPassword(email: mail, password: pwd),
+      ).thenAnswer((_) async => fakeCred);
 
-      await tester.enterText(find.byHintText('E-mail'), 'user@test.com');
-      await tester.enterText(find.byHintText('Password'), '123456');
-      await tester.tap(find.text('LOGIN'));
-      await tester.pumpAndSettle();
+      // act
+      final result = await authService.signUp(mail, pwd, pwd);
 
-      // we land on MyHomePage → press logout icon
-      await tester.tap(find.byIcon(Icons.logout_outlined));
-      await tester.pumpAndSettle();
+      // assert
+      expect(result, fakeCred);
+      verify(
+        mockAuth.createUserWithEmailAndPassword(email: mail, password: pwd),
+      ).called(1);
+      verifyNoMoreInteractions(mockAuth);
+    });
 
-      expect(find.text('Login'), findsOneWidget); // back on template
-    }, name: 'auth_flow');
+    test('throws when passwords differ', () async {
+      expect(
+        () => authService.signUp(mail, pwd, 'OTHER'),
+        throwsA(isA<Exception>()),
+      );
+      verifyZeroInteractions(mockAuth);
+    });
+  });
+
+  group('signIn', () {
+    test('delegates to FirebaseAuth', () async {
+      final fakeCred = MockUserCredential();
+      when(
+        mockAuth.signInWithEmailAndPassword(email: mail, password: pwd),
+      ).thenAnswer((_) async => fakeCred);
+
+      final result = await authService.signIn(mail, pwd);
+
+      expect(result, fakeCred);
+      verify(
+        mockAuth.signInWithEmailAndPassword(email: mail, password: pwd),
+      ).called(1);
+    });
+  });
+
+  group('resetPassword', () {
+    test('sends reset email', () async {
+      when(
+        mockAuth.sendPasswordResetEmail(email: mail),
+      ).thenAnswer((_) async => {});
+
+      await authService.resetPassword(mail);
+
+      verify(mockAuth.sendPasswordResetEmail(email: mail)).called(1);
+    });
+  });
+
+  group('signOut', () {
+    test('calls FirebaseAuth.signOut()', () async {
+      when(mockAuth.signOut()).thenAnswer((_) async => {});
+
+      await authService.signOut();
+
+      verify(mockAuth.signOut()).called(1);
+    });
+  });
+
+  group('getUser', () {
+    test('returns FirebaseAuth.instance.currentUser', () {
+      final fakeUser = MockUser();
+      when(FirebaseAuth.instance).thenReturn(mockAuth);
+      when(mockAuth.currentUser).thenReturn(fakeUser);
+
+      final user = authService.getUser();
+
+      expect(user, fakeUser);
+    });
   });
 }
