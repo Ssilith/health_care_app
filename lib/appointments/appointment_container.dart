@@ -7,21 +7,34 @@ import 'package:health_care_app/widgets/popup_window.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class AppointmentContainer extends StatelessWidget {
+class AppointmentContainer extends StatefulWidget {
   final Appointment appointment;
   final Function(String) onDelete;
   final VoidCallback onEdit;
+  final AppointmentService? appointmentService;
   const AppointmentContainer({
     super.key,
     required this.appointment,
     required this.onDelete,
     required this.onEdit,
+    this.appointmentService,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final AppointmentService appointmentService = AppointmentService();
+  State<AppointmentContainer> createState() => _AppointmentContainerState();
+}
 
+class _AppointmentContainerState extends State<AppointmentContainer> {
+  late AppointmentService appointmentService;
+
+  @override
+  void initState() {
+    appointmentService = widget.appointmentService ?? AppointmentService();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Slidable(
       startActionPane: ActionPane(
         motion: const StretchMotion(),
@@ -36,7 +49,7 @@ class AppointmentContainer extends StatelessWidget {
               foregroundColor: Theme.of(context).colorScheme.primary,
               icon: Icons.edit,
               label: "Edit",
-              onPressed: (_) => onEdit(),
+              onPressed: (_) => widget.onEdit(),
             ),
           ),
           IconTheme(
@@ -64,9 +77,9 @@ class AppointmentContainer extends StatelessWidget {
                             onPressed: () async {
                               try {
                                 await appointmentService.deleteAppointment(
-                                  appointment.id ?? "",
+                                  widget.appointment.id ?? "",
                                 );
-                                onDelete(appointment.id ?? "");
+                                widget.onDelete(widget.appointment.id ?? "");
                                 Navigator.of(context).pop();
                               } catch (e) {
                                 displayErrorMotionToast(
@@ -100,7 +113,7 @@ class AppointmentContainer extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                appointment.doctorType,
+                widget.appointment.doctorType,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -110,21 +123,22 @@ class AppointmentContainer extends StatelessWidget {
                 ),
               ),
               ContainerRow(
-                title: appointment.doctorName,
+                title: widget.appointment.doctorName,
                 iconData: Icons.person,
                 textMaxLines: 1,
               ),
               ContainerRow(
-                title: DateFormat('h:mm a').format(appointment.date),
+                title: DateFormat('h:mm a').format(widget.appointment.date),
                 iconData: MdiIcons.clock,
                 iconSize: 20,
                 textMaxLines: 1,
               ),
               ContainerRow(
-                title: appointment.location,
+                title: widget.appointment.location,
                 iconData: Icons.location_pin,
               ),
-              appointment.purpose != null && appointment.purpose != ""
+              widget.appointment.purpose != null &&
+                      widget.appointment.purpose != ""
                   ? Row(
                     children: [
                       Center(
@@ -135,7 +149,7 @@ class AppointmentContainer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 5),
-                      Expanded(child: Text(appointment.purpose!)),
+                      Expanded(child: Text(widget.appointment.purpose!)),
                     ],
                   )
                   : const SizedBox.shrink(),

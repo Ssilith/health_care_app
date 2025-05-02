@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../utils/benchmark_helper.dart';
 import 'utils/common_actions.dart';
+import '../utils/benchmark_helper.dart';
 
 void main() {
   testWidgets('login + logout', (tester) async {

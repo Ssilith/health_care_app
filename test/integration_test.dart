@@ -12,11 +12,9 @@ import 'utils/benchmark_helper.dart';
 import 'utils/firebase_test_setup.dart';
 
 void main() {
-  setUpAll(() async {
-    await setupFirebaseForTests();
-  });
+  setUpAll(() async => await setupFirebaseForTests());
 
-  group('All integration flows', () {
+  group('All Integration Tests', () {
     auth.main();
     home.main();
     search.main();

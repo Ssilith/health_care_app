@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/appointments/appointment_container.dart';
 import 'package:health_care_app/model/appointment.dart';
 import '../utils/benchmark_helper.dart';
+import 'utils/mock_services.dart';
 
 void main() {
   testWidgets('AppointmentContainer builds and shows data', (tester) async {
@@ -20,6 +21,8 @@ void main() {
             appointment: appointment,
             onDelete: (_) {},
             onEdit: () {},
+            // Pass the mock service
+            appointmentService: MockAppointmentService(),
           ),
         ),
       );

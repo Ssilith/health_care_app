@@ -10,7 +10,13 @@ import 'package:health_care_app/widgets/text_input_form.dart';
 class NotebookForm extends StatefulWidget {
   final Notebook? existingNote;
   final Function(Notebook) onChange;
-  const NotebookForm({super.key, required this.onChange, this.existingNote});
+  final NotebookService? notebookService;
+  const NotebookForm({
+    super.key,
+    required this.onChange,
+    this.existingNote,
+    this.notebookService,
+  });
 
   @override
   State<NotebookForm> createState() => _NotebookFormState();
@@ -19,12 +25,12 @@ class NotebookForm extends StatefulWidget {
 class _NotebookFormState extends State<NotebookForm> {
   final TextEditingController title = TextEditingController();
   final TextEditingController content = TextEditingController();
-
-  final NotebookService notebookService = NotebookService();
+  late NotebookService notebookService;
   bool isLoading = false;
 
   @override
   void initState() {
+    notebookService = widget.notebookService ?? NotebookService();
     if (widget.existingNote != null) {
       final note = widget.existingNote!;
       title.text = note.noteTitle;

@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/global.dart';
 import 'package:health_care_app/main.dart';
 import 'package:health_care_app/widgets/search_bar_container.dart';
-
 import '../utils/benchmark_helper.dart';
 
 void main() {

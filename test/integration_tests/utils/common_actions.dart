@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> login(WidgetTester tester) async {
   await tester.pumpAndSettle(Duration(seconds: 2));
 
-  // Find all TextFields and use the first two for email and password
   final textFields = find.byType(TextField);
   if (textFields.evaluate().length >= 2) {
     await tester.enterText(textFields.at(0), 'a@a.com');
@@ -13,7 +12,6 @@ Future<void> login(WidgetTester tester) async {
     await tester.enterText(textFields.at(1), '123456');
     await tester.pump();
 
-    // Find buttons and press the one with LOGIN text
     final buttons = find.byType(TextButton);
     if (buttons.evaluate().isNotEmpty) {
       await tester.tap(buttons.first);

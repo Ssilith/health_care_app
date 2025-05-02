@@ -2,10 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/notebook/notebook_form.dart';
 import '../utils/benchmark_helper.dart';
 import 'utils/pump_widget.dart';
+import 'utils/mock_services.dart';
 
 void main() {
   testWidgets('NotebookForm prevents empty submit', (tester) async {
-    await pumpWithMaterial(tester, NotebookForm(onChange: (_) {}));
+    await pumpWithMaterial(
+      tester,
+      NotebookForm(onChange: (_) {}, notebookService: MockNotebookService()),
+    );
+
     await runPerf(() async {
       await tester.tap(find.text('SUBMIT'), warnIfMissed: false);
       await tester.pump();

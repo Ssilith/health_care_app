@@ -18,13 +18,9 @@ Future<void> runPerf(
   Future<void> Function() action, {
   String name = 'unnamed',
   int repeat = _defaultRepeat,
-  Future<void> Function()? warmUp,
-  Map<String, Object?> extras = const {},
 }) async {
   final timings = <int>[];
   int failures = 0;
-
-  if (warmUp != null) await warmUp();
 
   for (int i = 0; i < repeat; i++) {
     final sw = Stopwatch();
@@ -32,9 +28,8 @@ Future<void> runPerf(
     try {
       sw.start();
       await action();
-    } catch (e, st) {
+    } catch (_) {
       failures++;
-      print('❌ $name run failed: $e\n$st');
       failed = true;
     } finally {
       sw.stop();
@@ -59,7 +54,6 @@ Future<void> runPerf(
     'stdev_us': stdev,
     'failures': failures,
     'platform': kIsWeb ? 'web' : 'mobile',
-    ...extras,
   };
 
   _reports.add(report);
