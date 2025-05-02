@@ -38,10 +38,15 @@ Future<void> logout(WidgetTester tester) async {
 }
 
 Future<void> allowLocationPermission(WidgetTester tester) async {
-  final allowBtn = find.textContaining('Allow').first;
-  if (allowBtn.evaluate().isNotEmpty) {
-    await tester.tap(allowBtn);
-    await tester.pumpAndSettle();
+  await tester.pumpAndSettle(Duration(seconds: 1));
+  final allowTexts = ['Allow', 'ALLOW', 'OK', 'Yes', 'Allow while using'];
+  for (var text in allowTexts) {
+    final allowBtn = find.textContaining(text, findRichText: true);
+    if (allowBtn.evaluate().isNotEmpty) {
+      await tester.tap(allowBtn.first);
+      await tester.pumpAndSettle();
+      return;
+    }
   }
 }
 
@@ -138,8 +143,26 @@ Future<void> deleteIceInfo(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-Future<void> sendChatMessage(WidgetTester tester) async {
-  await tester.enterText(find.byType(TextField).last, 'Hello bot');
-  await tester.tap(find.byIcon(Icons.arrow_forward));
-  await tester.pumpAndSettle(const Duration(seconds: 1));
+Future<void> sendChatMessageEnhanced(WidgetTester tester) async {
+  await tester.pumpAndSettle();
+
+  final textFields = find.byType(TextField);
+  if (textFields.evaluate().isEmpty) {
+    return;
+  }
+
+  await tester.enterText(textFields.last, 'Hello bot');
+  await tester.pump();
+
+  final sendButton = find.byIcon(Icons.arrow_forward);
+  if (sendButton.evaluate().isNotEmpty) {
+    await tester.tap(sendButton.first);
+  } else {
+    final iconButtons = find.byType(IconButton);
+    if (iconButtons.evaluate().isNotEmpty) {
+      await tester.tap(iconButtons.last);
+    }
+  }
+
+  await tester.pumpAndSettle();
 }

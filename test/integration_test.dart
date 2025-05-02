@@ -25,8 +25,8 @@ void main() {
     // appt.main();
     // note.main();
     // ice.main();
-    // chat.main();
-    // loc.main();
+    chat.main();
+    loc.main();
   });
 
   tearDownAll(dumpPerfReports);
