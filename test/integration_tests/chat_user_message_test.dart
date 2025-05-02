@@ -1,15 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
-import 'dart:convert';
 
 import 'package:health_care_app/chat/chat_page.dart';
 import 'package:health_care_app/services/chat_service.dart';
 
 import '../utils/benchmark_helper.dart';
-
-class MockClient extends Mock implements http.Client {}
+import 'utils/chat_user_message_test.mocks.dart';
 
 void main() {
   testWidgets('chat_user_message', (tester) async {
@@ -17,7 +17,7 @@ void main() {
 
     when(
       mockClient.post(
-        Uri(),
+        argThat(isA<Uri>()),
         headers: anyNamed('headers'),
         body: anyNamed('body'),
       ),
