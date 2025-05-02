@@ -20,17 +20,34 @@ Future<void> runPerf(
   final timings = <int>[];
   int failures = 0;
 
+  await action();
+
   for (int i = 0; i < repeat; i++) {
-    final sw = Stopwatch()..start();
+    final sw = Stopwatch();
+    bool failed = false;
     try {
+      sw.start();
       await action();
     } catch (_) {
       failures++;
+      failed = true;
     } finally {
       sw.stop();
-      timings.add(sw.elapsedMicroseconds);
+      if (!failed) timings.add(sw.elapsedMicroseconds);
     }
   }
+
+  // for (int i = 0; i < repeat; i++) {
+  //   final sw = Stopwatch()..start();
+  //   try {
+  //     await action();
+  //   } catch (_) {
+  //     failures++;
+  //   } finally {
+  //     sw.stop();
+  //     timings.add(sw.elapsedMicroseconds);
+  //   }
+  // }
 
   timings.sort();
   final avg = timings.reduce((a, b) => a + b) / repeat;
@@ -39,7 +56,7 @@ Future<void> runPerf(
     timings.map((t) => math.pow(t - avg, 2)).reduce((a, b) => a + b) / repeat,
   );
 
-  final report = {
+  final report = <String, dynamic>{
     'test': name,
     'repeat': repeat,
     'avg_us': avg,

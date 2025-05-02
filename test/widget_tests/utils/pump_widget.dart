@@ -6,9 +6,19 @@ Future<void> pumpWithMaterial(
   Widget child, {
   bool settle = false,
 }) async {
+  // await tester.pumpWidget(
+  //   MaterialApp(
+  //     debugShowCheckedModeBanner: false,
+  //     home: Scaffold(body: Center(child: child)),
+  //   ),
+  // );
+
   await tester.pumpWidget(
     MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.from(
+        colorScheme: const ColorScheme.light(),
+      ).copyWith(useMaterial3: true),
       home: Scaffold(body: Center(child: child)),
     ),
   );

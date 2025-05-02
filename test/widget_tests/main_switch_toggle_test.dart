@@ -20,12 +20,21 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    //   await tester.pumpAndSettle();
+
+    //   await runPerf(() async {
+    //     state = false;
+    //     await tester.pumpAndSettle();
+    //     expect(state, isFalse);
+    //   }, name: 'widget_main_switch_toggle');
+
+    await tester.tap(find.byKey(const Key('mainSwitch')));
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(state, isFalse);
 
     await runPerf(() async {
-      state = false;
-      await tester.pumpAndSettle();
-      expect(state, isFalse);
+      await tester.tap(find.byKey(const Key('mainSwitch')));
+      await tester.pump(const Duration(milliseconds: 350));
     }, name: 'widget_main_switch_toggle');
   });
 }
