@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:location/location.dart';
 import 'package:universal_html/html.dart' as html;
 
-Future initializeLocation() async {
-  Location location = Location();
+Future initializeLocation({Location? locationInstance}) async {
+  final location = locationInstance ?? Location();
   bool serviceEnabled;
   PermissionStatus permissionGranted;
   LocationData locationData;

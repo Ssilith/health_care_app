@@ -44,7 +44,7 @@ void main() {
     when(mockAuth.signOut()).thenAnswer((_) async => {});
 
     when(mockAuth.signOut()).thenAnswer((_) async {
-      when(mockAuth.currentUser).thenReturn(null);
+      when(mockAuth.currentUser).thenReturn(mockUser);
       return;
     });
 

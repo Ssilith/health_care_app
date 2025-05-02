@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:health_care_app/api/location.dart';
 import 'package:health_care_app/localization/hospital_finder.dart';
 import 'package:location/location.dart';
 import 'package:mockito/mockito.dart';
@@ -24,6 +25,7 @@ class MockLocation extends Mock implements Location {
 
 void main() {
   testWidgets('location_permission', (tester) async {
+    initializeLocation(locationInstance: MockLocation());
     await runPerf(() async {
       await tester.pumpWidget(const MaterialApp(home: HospitalFinder()));
       await tester.pumpAndSettle();

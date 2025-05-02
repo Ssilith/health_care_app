@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/notebook/main_notebook.dart';
-import 'package:health_care_app/services/notebook_service.dart';
+import 'package:health_care_app/services/repository_impl.dart';
 
 import '../utils/benchmark_helper.dart';
 import 'utils/hint_text_finder.dart';
 import 'utils/mock_repository.dart';
 
 void main() {
-  testWidgets('notebook_crud', (tester) async {
-    final mockRepo = MockRepository();
-    final notebookService = NotebookService.withRepository(mockRepo);
+  setUpAll(() {
+    RepositoryImpl.inject(MockRepository() as RepositoryImpl);
+  });
 
+  testWidgets('notebook_crud', (tester) async {
     await runPerf(() async {
-      await tester.pumpWidget(
-        MaterialApp(home: MainNotebook(notebookService: notebookService)),
-      );
+      await tester.pumpWidget(MaterialApp(home: MainNotebook()));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.add));

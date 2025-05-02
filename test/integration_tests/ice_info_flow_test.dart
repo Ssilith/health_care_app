@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_care_app/ice/main_ice.dart';
-import 'package:health_care_app/services/ice_service.dart';
+import 'package:health_care_app/services/repository_impl.dart';
 
 import '../utils/benchmark_helper.dart';
 import 'utils/hint_text_finder.dart';
 import 'utils/mock_repository.dart';
 
 void main() {
-  testWidgets('ice_info_crud', (tester) async {
-    final mockRepo = MockRepository();
-    final iceService = IceService.withRepository(mockRepo);
+  setUpAll(() {
+    RepositoryImpl.inject(MockRepository() as RepositoryImpl);
+  });
 
+  testWidgets('ice_info_crud', (tester) async {
     await runPerf(() async {
-      await tester.pumpWidget(
-        MaterialApp(home: MainIce(iceService: iceService)),
-      );
+      await tester.pumpWidget(MaterialApp(home: MainIce()));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.add));

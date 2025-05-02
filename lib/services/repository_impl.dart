@@ -8,8 +8,21 @@ import 'package:health_care_app/services/repository.dart';
 import '../model/notebook.dart';
 
 class RepositoryImpl implements Repository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  static RepositoryImpl? _testStub;
+  static void inject(RepositoryImpl stub) => _testStub = stub;
+
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _firebaseAuth;
+
+  RepositoryImpl._(this._firestore, this._firebaseAuth);
+
+  factory RepositoryImpl() {
+    if (_testStub != null) return _testStub!;
+    return RepositoryImpl._(FirebaseFirestore.instance, FirebaseAuth.instance);
+  }
 
   @override
   Future<Appointment> addAppointment(Appointment appointment) async {
