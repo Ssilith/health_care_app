@@ -13,10 +13,13 @@ import 'package:intl/intl.dart';
 class AppointmentForm extends StatefulWidget {
   final Appointment? existingAppointment;
   final Function(Appointment) onChange;
+  final AppointmentService? appointmentService;
+
   const AppointmentForm({
     super.key,
     required this.onChange,
     this.existingAppointment,
+    this.appointmentService,
   });
 
   @override
@@ -30,11 +33,12 @@ class _AppointmentFormState extends State<AppointmentForm> {
   TextEditingController location = TextEditingController();
   TextEditingController purpose = TextEditingController();
 
-  final AppointmentService appointmentService = AppointmentService();
+  late AppointmentService _appointmentService;
   bool isLoading = false;
 
   @override
   void initState() {
+    _appointmentService = widget.appointmentService ?? AppointmentService();
     if (widget.existingAppointment != null) {
       final appointment = widget.existingAppointment!;
       date.text = DateFormat('yyyy-MM-dd h:mm a').format(appointment.date);
@@ -142,10 +146,10 @@ class _AppointmentFormState extends State<AppointmentForm> {
                     );
                     Appointment addedAppointment =
                         widget.existingAppointment != null
-                            ? await appointmentService.editAppointment(
+                            ? await _appointmentService.editAppointment(
                               appointment,
                             )
-                            : await appointmentService.addAppointment(
+                            : await _appointmentService.addAppointment(
                               appointment,
                             );
                     widget.onChange(addedAppointment);

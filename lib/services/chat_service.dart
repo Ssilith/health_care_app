@@ -7,10 +7,7 @@ const String chatApiUrl = 'https://api.openai.com/v1/chat/completions';
 class ChatService {
   final http.Client client;
 
-  static http.Client? _testOverride;
-  static void overrideClientForTests(http.Client c) => _testOverride = c;
-  ChatService({http.Client? client})
-    : client = client ?? _testOverride ?? http.Client();
+  ChatService({http.Client? client}) : client = client ?? http.Client();
 
   Future<String> getApiKey() async {
     try {

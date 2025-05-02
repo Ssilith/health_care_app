@@ -3,8 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth firebaseAuth;
 
+  static FirebaseAuth? _testOverride;
+  static void overrideInstanceForTesting(FirebaseAuth auth) {
+    _testOverride = auth;
+  }
+
   AuthService({FirebaseAuth? firebaseAuth})
-    : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    : firebaseAuth = firebaseAuth ?? _testOverride ?? FirebaseAuth.instance;
 
   Future<UserCredential> signUp(
     String email,

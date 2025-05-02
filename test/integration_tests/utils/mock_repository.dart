@@ -67,7 +67,7 @@ class MockRepository extends Mock implements Repository {
       IceInfo(
         id: '1',
         fullName: 'Alice Smith',
-        birthDate: DateTime(2000, 1, 1).toIso8601String(),
+        birthDate: '2000-01-01',
         gender: 'Female',
       ),
     ];
