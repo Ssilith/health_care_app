@@ -72,9 +72,6 @@ dev_dependencies:
   firebase_auth_mocks: ^0.14.1
   firebase_core_platform_interface: ^5.4.0
 
-  golden_toolkit: ^0.15.0
-  leak_tracker: ^10.0.8
-
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true

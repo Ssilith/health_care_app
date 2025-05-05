@@ -43,12 +43,12 @@ Future<void> runPerf(
   if (timings.isEmpty) timings.add(0);
   timings.sort();
 
-  double _pct(List<int> d, double p) =>
+  double pct(List<int> d, double p) =>
       d[(p * (d.length - 1)).round()].toDouble();
 
   final avg = timings.reduce((a, b) => a + b) / timings.length;
-  final p50 = _pct(timings, .50);
-  final p95 = _pct(timings, .95);
+  final p50 = pct(timings, .50);
+  final p95 = pct(timings, .95);
   final min = timings.first.toDouble();
   final max = timings.last.toDouble();
   final stdev = math.sqrt(
