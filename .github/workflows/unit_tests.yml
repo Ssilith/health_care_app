@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  BENCHMARK_REPEAT: 10
+  BENCHMARK_REPEAT: 1000
 
 jobs:
   unit:
