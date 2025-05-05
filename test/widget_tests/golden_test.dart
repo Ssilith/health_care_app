@@ -32,8 +32,11 @@ final double tolerance =
     (isWeb ? 0.05 : 0.01);
 
 void main() async {
+  // Setup must happen before any tests are declared
   await loadAppFonts();
   await setupFirebaseForTests();
+
+  final devicePixelRatio = isWeb ? 2.0 : 3.0;
 
   // Configure golden toolkit
   GoldenToolkitConfiguration(

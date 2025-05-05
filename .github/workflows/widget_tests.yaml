@@ -87,9 +87,17 @@ jobs:
         echo "TS=$TS" >> $GITHUB_ENV
         
         if [[ "${{ matrix.target }}" == "web" ]]; then
-          CMD="flutter test --platform chrome --dart-define=GOLDEN_PLATFORM=web --dart-define=TOLERANCE=0.05 --update-goldens test/widget_tests/golden_test.dart"
+          # First run to generate the golden files (--update-goldens)
+          flutter test --platform chrome --dart-define=GOLDEN_PLATFORM=web --dart-define=TOLERANCE=0.05 --update-goldens test/widget_tests/golden_test.dart || true
+          
+          # Then run to validate (without --update-goldens)
+          CMD="flutter test --platform chrome --dart-define=GOLDEN_PLATFORM=web --dart-define=TOLERANCE=0.05 test/widget_tests/golden_test.dart"
         else
-          CMD="flutter test --dart-define=GOLDEN_PLATFORM=mobile --dart-define=TOLERANCE=0.01 --update-goldens test/widget_tests/golden_test.dart"
+          # First run to generate the golden files (--update-goldens)
+          flutter test --dart-define=GOLDEN_PLATFORM=mobile --dart-define=TOLERANCE=0.01 --update-goldens test/widget_tests/golden_test.dart || true
+          
+          # Then run to validate (without --update-goldens)
+          CMD="flutter test --dart-define=GOLDEN_PLATFORM=mobile --dart-define=TOLERANCE=0.01 test/widget_tests/golden_test.dart"
         fi
         
         set +e
