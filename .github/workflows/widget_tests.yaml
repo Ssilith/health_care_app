@@ -96,7 +96,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Only for web: install Chrome & enable
       - name: Enable web & install Chrome
         if: matrix.target == 'web'
         run: |
@@ -110,7 +109,7 @@ jobs:
           set -eo pipefail
           flutter test ${{ matrix.platformFlag }} \
             --tags golden \
-            test/widget_tests/golden_tests.dart
+            test/golden_tests.dart
         continue-on-error: true
 
       - name: Upload golden diffs if any
