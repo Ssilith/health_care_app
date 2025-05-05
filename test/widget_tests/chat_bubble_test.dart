@@ -1,29 +1,30 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:health_care_app/chat/chat_bubble.dart';
-import '../utils/benchmark_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:health_care_app/chat/chat_bubble.dart';
 
-import 'utils/pump_widget.dart';
+final String goldenPlatform = const String.fromEnvironment(
+  'GOLDEN_PLATFORM',
+  defaultValue: 'mobile',
+);
+final bool isWeb = goldenPlatform == 'web';
 
 void main() {
-  testWidgets('ChatBubble positions on correct side', (tester) async {
-    await runPerf(() async {
-      await pumpWithMaterial(
-        tester,
-        Column(
-          children: const [
-            ChatBubble(message: 'user', isCurrentUser: true),
-            ChatBubble(message: 'bot', isCurrentUser: false),
-          ],
+  group('ChatBubble Golden Tests', () {
+    testGoldens('ChatBubble renders correctly', (tester) async {
+      final goldenFileName = 'chat_bubble_${isWeb ? 'web' : 'mobile'}.png';
+
+      await tester.pumpWidgetBuilder(
+        Material(
+          child: ChatBubble(message: 'Hello, world!', isCurrentUser: true),
+        ),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
         ),
       );
 
-      final bubbles = find.byType(ChatBubble);
-      expect(bubbles, findsNWidgets(2));
-
-      final first = tester.getTopRight(bubbles.first);
-      final second = tester.getTopLeft(bubbles.last);
-      expect(first.dx, greaterThan(second.dx));
-    }, name: 'widget_chat_bubble_alignment');
+      await screenMatchesGolden(tester, goldenFileName);
+    });
   });
 }

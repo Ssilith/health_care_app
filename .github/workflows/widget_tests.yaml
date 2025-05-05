@@ -43,8 +43,8 @@ jobs:
       run: |
         sudo apt-get update -y
         sudo apt-get install -y libglu1-mesa
-        mkdir -p $HOME/.golden_toolkit
-        echo '{"enabledDevices":["phone","tablet","desktop"],"threshold":0.05,"baseDir":"test/goldens"}' > $HOME/.golden_toolkit/golden_toolkit_config.json
+        mkdir -p test/failures
+        mkdir -p test/goldens
         
     # Install dependencies
     - name: Install dependencies
@@ -85,9 +85,6 @@ jobs:
         mkdir -p perf
         TS=$(date +%Y%m%d_%H%M%S)
         echo "TS=$TS" >> $GITHUB_ENV
-        
-        # Create directory for failures
-        mkdir -p test/failures
         
         if [[ "${{ matrix.target }}" == "web" ]]; then
           CMD="flutter test --platform chrome --dart-define=GOLDEN_PLATFORM=web --dart-define=TOLERANCE=0.05 --update-goldens test/widget_tests/golden_test.dart"
