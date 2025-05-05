@@ -1,0 +1,1 @@
+int getCurrentMemory() => -1;

@@ -10,6 +10,8 @@ import 'widget_tests/text_input_form_toggle_test.dart' as text_toggle;
 import 'widget_tests/rectangular_button_disabled_test.dart' as rect_btn;
 import 'widget_tests/popup_window_buttons_test.dart' as popup_btn;
 import 'widget_tests/search_bar_filter_test.dart' as search_bar;
+import 'widget_tests/chat_bubble_golden_test.dart' as chat_bubble_gold;
+import 'widget_tests/action_container_golden_test.dart' as action_gold;
 
 import 'utils/benchmark_helper.dart';
 import 'utils/firebase_test_setup.dart';
@@ -28,6 +30,8 @@ void main() {
     rect_btn.main();
     popup_btn.main();
     search_bar.main();
+    chat_bubble_gold.main();
+    action_gold.main();
   });
 
   tearDownAll(dumpPerfReports);

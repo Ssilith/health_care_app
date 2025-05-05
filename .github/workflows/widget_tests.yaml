@@ -1,4 +1,4 @@
-name: Flutter widget tests (mobile + web)
+name: Flutter widget+golden tests (mobile + web)
 
 on:
   push:
@@ -16,66 +16,65 @@ jobs:
 
     strategy:
       matrix:
-        target: [mobile, web]
+        include:
+          - target: mobile
+            platformFlag: ''
+          - target: web
+            platformFlag: '--platform chrome'
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.29.2'
-        channel: stable
-      id: flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+        id: flutter
 
-    - uses: actions/cache@v4
-      with:
-        path: |
-          ~/.pub-cache
-          ${{ steps.flutter.outputs.cache-path }}
-        key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ steps.flutter.outputs.cache-path }}
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
 
-    - name: Enable web & install Chrome
-      if: matrix.target == 'web'
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y chromium-browser || true
-        flutter config --enable-web
-        flutter devices
+      - name: Enable web & install Chrome
+        if: matrix.target == 'web'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y chromium-browser || true
+          flutter config --enable-web
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-    - name: Run widget tests on ${{ matrix.target }} & capture benchmark JSON
-      id: run_widget_tests
-      run: |
-        set -eo pipefail
-        mkdir -p perf
-        TS=$(date +%Y%m%d_%H%M%S)
-        echo "TS=$TS" >> $GITHUB_ENV
+      - name: Run widget + golden tests on ${{ matrix.target }}
+        id: run_widget_tests
+        run: |
+          set -eo pipefail
+          mkdir -p perf
+          TS=$(date +%Y%m%d_%H%M%S)
+          echo "TS=$TS" >> $GITHUB_ENV
 
-        if [[ "${{ matrix.target }}" == "web" ]]; then
-          CMD="flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/widget_test.dart"
-        else
-          CMD="flutter test --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/widget_test.dart"
-        fi
+          # run all tests (widget + golden) in one go
+          flutter test ${{ matrix.platformFlag }} \
+            --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT \
+            test/widget_test.dart
 
-        set +e
-        $CMD | tee widget_output.log
-        EXIT=${PIPESTATUS[0]}
-        set -e
+          EXIT=$?
+          
+          # extract the PERF_REPORT JSON block
+          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' widget_output.log | \
+            sed '1d;$d' > perf/widget_${{ matrix.target }}_${TS}.json || true
 
-        awk '/PERF_REPORT_START/,/PERF_REPORT_END/' widget_output.log | \
-          sed '1d;$d' > perf/widget_${{ matrix.target }}_${TS}.json || true
+          if [ $EXIT -ne 0 ]; then
+            echo "==== widget tests failed on ${{ matrix.target }} ===="
+            exit $EXIT
+          fi
 
-        if [[ $EXIT -ne 0 ]]; then
-          echo "==== widget tests failed on ${{ matrix.target }} ===="
-          cat widget_output.log
-        fi
-        exit $EXIT
-
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: widget-${{ matrix.target }}-${{ env.TS }}
-        path: perf/widget_${{ matrix.target }}_${{ env.TS }}.json
-        if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: widget-${{ matrix.target }}-${{ env.TS }}
+          path: perf/widget_${{ matrix.target }}_${{ env.TS }}.json
+          if-no-files-found: warn
