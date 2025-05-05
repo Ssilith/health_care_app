@@ -55,7 +55,7 @@ Future<void> runPerf(
     timings.fold<double>(0, (s, v) => s + math.pow(v - avg, 2)) /
         timings.length,
   );
-  final cov = stdev / avg;
+  final cov = avg != 0.0 && !avg.isNaN ? (stdev / avg) : 0.0;
 
   _reports.add({
     'test': name,
