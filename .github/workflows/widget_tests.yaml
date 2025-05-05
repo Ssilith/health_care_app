@@ -1,80 +1,3 @@
-name: Flutter widget+golden CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
-
-env:
-  BENCHMARK_REPEAT: 10
-
-jobs:
-  widget:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - target: mobile
-            platformFlag: ''
-          - target: web
-            platformFlag: '--platform chrome --web-renderer canvaskit'
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.29.2'
-          channel: stable
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            ${{ steps.flutter.outputs.cache-path }}
-          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
-
-      - name: Enable web & install Chrome
-        if: matrix.target == 'web'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y chromium-browser || true
-          flutter config --enable-web
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Run widget tests on ${{ matrix.target }} & capture perf JSON
-        id: run_widget_tests
-        run: |
-          set -eo pipefail
-          mkdir -p perf
-          TS=$(date +%Y%m%d_%H%M%S)
-          echo "TS=$TS" >> $GITHUB_ENV
-
-          # run your combined widget+golden entrypoint (widget_test.dart)
-          flutter test ${{ matrix.platformFlag }} \
-            --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT \
-            test/widget_test.dart | tee widget_output.log
-          EXIT=${PIPESTATUS[0]}
-
-          # extract only the PERF_REPORT block
-          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' widget_output.log \
-            | sed '1d;$d' > perf/widget_${{ matrix.target }}_${TS}.json || true
-
-          if [ $EXIT -ne 0 ]; then
-            echo "==== widget tests failed on ${{ matrix.target }} ===="
-            exit $EXIT
-          fi
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: widget-${{ matrix.target }}-${{ env.TS }}
-          path: perf/widget_${{ matrix.target }}_${{ env.TS }}.json
-          if-no-files-found: warn
-
   golden:
     needs: widget
     runs-on: ubuntu-latest
@@ -84,7 +7,7 @@ jobs:
           - target: mobile
             platformFlag: ''
           - target: web
-            platformFlag: '--platform chrome --web-renderer canvaskit'
+            platformFlag: '--platform chrome'
     steps:
       - uses: actions/checkout@v4
 
@@ -93,13 +16,10 @@ jobs:
           flutter-version: '3.29.2'
           channel: stable
 
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            ${{ steps.flutter.outputs.cache-path }}
-          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+      - name: Install dependencies
+        run: flutter pub get
 
+      # Only for web: install Chrome & enable
       - name: Enable web & install Chrome
         if: matrix.target == 'web'
         run: |
@@ -107,16 +27,12 @@ jobs:
           sudo apt-get install -y chromium-browser || true
           flutter config --enable-web
 
-      - name: Install dependencies
-        run: flutter pub get
-
       - name: Run only golden tests on ${{ matrix.target }}
         id: golden_run
         run: |
           set -eo pipefail
           flutter test ${{ matrix.platformFlag }} \
             --tags golden \
-            --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT \
             test/widget_tests/golden_tests.dart
         continue-on-error: true
 

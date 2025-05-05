@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:flutter_test/flutter_test.dart'
+    show webGoldenComparator, goldenFileComparator;
 
 import 'widget_tests/chat_bubble_golden_test.dart' as chat_bubble_gold;
 import 'widget_tests/action_container_golden_test.dart' as action_gold;
