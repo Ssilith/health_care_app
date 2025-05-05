@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, avoid_web_libraries_in_flutter, deprecated_member_use
+
 @JS()
 library mem_web;
 
