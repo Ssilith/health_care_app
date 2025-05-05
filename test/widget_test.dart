@@ -1,8 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_test/flutter_test.dart'
-    show webGoldenComparator, goldenFileComparator;
-import 'package:golden_toolkit/golden_toolkit.dart';
 
 import 'widget_tests/appointment_container_smoke_test.dart' as appt_smoke;
 import 'widget_tests/notebook_form_validation_test.dart' as notebook_val;
@@ -19,13 +15,7 @@ import 'utils/benchmark_helper.dart';
 import 'utils/firebase_test_setup.dart';
 
 void main() {
-  setUpAll(() async {
-    await setupFirebaseForTests();
-    await loadAppFonts();
-    if (kIsWeb) {
-      goldenFileComparator = webGoldenComparator as GoldenFileComparator;
-    }
-  });
+  setUpAll(() async => await setupFirebaseForTests());
 
   group('All Widget Tests', () {
     appt_smoke.main();
