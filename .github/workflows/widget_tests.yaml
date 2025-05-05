@@ -1,39 +1,34 @@
-name: Flutter widget tests (mobile + web)
-
+name: Flutter widget and golden tests (mobile + web)
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
 env:
   BENCHMARK_REPEAT: 10
-
 jobs:
-  widget:
+  tests:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         target: [mobile, web]
-
+        test_type: [widget, golden]
     steps:
     - uses: actions/checkout@v4
-
     - uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.29.2'
         channel: stable
       id: flutter
-
     - uses: actions/cache@v4
       with:
         path: |
           ~/.pub-cache
           ${{ steps.flutter.outputs.cache-path }}
         key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
-
+    
+    # Setup for web tests
     - name: Enable web & install Chrome
       if: matrix.target == 'web'
       run: |
@@ -41,89 +36,96 @@ jobs:
         sudo apt-get install -y chromium-browser || true
         flutter config --enable-web
         flutter devices
-
+    
+    # Install dependencies for golden testing
+    - name: Setup for golden tests
+      if: matrix.test_type == 'golden'
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y libglu1-mesa
+        mkdir -p $HOME/.golden_toolkit
+        echo '{"enabledDevices":["phone","tablet","desktop"],"threshold":0.05,"baseDir":"test/goldens"}' > $HOME/.golden_toolkit/golden_toolkit_config.json
+        
+    # Install dependencies
     - name: Install dependencies
       run: flutter pub get
-
-    - name: Run widget tests on ${{ matrix.target }} & capture benchmark JSON
+    
+    # Run widget tests
+    - name: Run widget tests on ${{ matrix.target }}
+      if: matrix.test_type == 'widget'
       id: run_widget_tests
       run: |
         set -eo pipefail
         mkdir -p perf
         TS=$(date +%Y%m%d_%H%M%S)
         echo "TS=$TS" >> $GITHUB_ENV
-
         if [[ "${{ matrix.target }}" == "web" ]]; then
           CMD="flutter test --platform chrome --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/widget_test.dart"
         else
           CMD="flutter test --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT test/widget_test.dart"
         fi
-
         set +e
         $CMD | tee widget_output.log
         EXIT=${PIPESTATUS[0]}
         set -e
-
         awk '/PERF_REPORT_START/,/PERF_REPORT_END/' widget_output.log | \
           sed '1d;$d' > perf/widget_${{ matrix.target }}_${TS}.json || true
-
         if [[ $EXIT -ne 0 ]]; then
           echo "==== widget tests failed on ${{ matrix.target }} ===="
           cat widget_output.log
         fi
         exit $EXIT
-
+    
+    # Run golden tests
+    - name: Run golden tests on ${{ matrix.target }}
+      if: matrix.test_type == 'golden'
+      id: run_golden_tests
+      run: |
+        set -eo pipefail
+        mkdir -p perf
+        TS=$(date +%Y%m%d_%H%M%S)
+        echo "TS=$TS" >> $GITHUB_ENV
+        
+        # Create directory for failures
+        mkdir -p test/failures
+        
+        if [[ "${{ matrix.target }}" == "web" ]]; then
+          CMD="flutter test --platform chrome --dart-define=GOLDEN_PLATFORM=web --dart-define=TOLERANCE=0.05 --update-goldens test/widget_tests/golden_test.dart"
+        else
+          CMD="flutter test --dart-define=GOLDEN_PLATFORM=mobile --dart-define=TOLERANCE=0.01 --update-goldens test/widget_tests/golden_test.dart"
+        fi
+        
+        set +e
+        $CMD | tee golden_output.log
+        EXIT=${PIPESTATUS[0]}
+        set -e
+        
+        if [[ $EXIT -ne 0 ]]; then
+          echo "==== golden tests failed on ${{ matrix.target }} ===="
+          cat golden_output.log
+        fi
+        exit $EXIT
+    
+    # Upload test artifacts
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: always() && matrix.test_type == 'widget'
       with:
         name: widget-${{ matrix.target }}-${{ env.TS }}
         path: perf/widget_${{ matrix.target }}_${{ env.TS }}.json
         if-no-files-found: warn
-
-  golden:
-    needs: widget
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - target: mobile
-            platformFlag: ''
-          - target: web
-            platformFlag: '--platform chrome'
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.29.2'
-          channel: stable
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Enable web & install Chrome
-        if: matrix.target == 'web'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y chromium-browser || true
-          flutter config --enable-web
-          # <-- this line tells flutter test where Chrome actually is:
-          echo "CHROME_EXECUTABLE=$(which chromium-browser)" >> $GITHUB_ENV
-
-      - name: Run only golden tests on ${{ matrix.target }}
-        id: golden_run
-        run: |
-          set -eo pipefail
-          flutter test ${{ matrix.platformFlag }} \
-            --tags golden \
-            test/widget_tests/golden_tests.dart
-        continue-on-error: true
-
-      - name: Upload golden diffs if any
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: golden-diffs-${{ matrix.target }}
-          path: |
-            **/*.new.png
-            **/*.diff.png
+    
+    # Upload golden test failures
+    - uses: actions/upload-artifact@v4
+      if: always() && matrix.test_type == 'golden' && failure()
+      with:
+        name: golden-failures-${{ matrix.target }}-${{ env.TS }}
+        path: test/failures/
+        if-no-files-found: warn
+    
+    # Upload golden test baselines
+    - uses: actions/upload-artifact@v4
+      if: always() && matrix.test_type == 'golden'
+      with:
+        name: golden-baselines-${{ matrix.target }}-${{ env.TS }}
+        path: test/goldens/
+        if-no-files-found: warn

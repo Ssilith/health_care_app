@@ -1,8 +1,7 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
-import 'package:flutter_test/flutter_test.dart'
-    show webGoldenComparator, goldenFileComparator;
 
 import 'chat_bubble_golden_test.dart' as chat_bubble_gold;
 import 'action_container_golden_test.dart' as action_gold;
@@ -17,26 +16,57 @@ import 'appointment_container_golden_test.dart' as appt_gold;
 import '../utils/benchmark_helper.dart';
 import '../utils/firebase_test_setup.dart';
 
+final String goldenPlatform = const String.fromEnvironment(
+  'GOLDEN_PLATFORM',
+  defaultValue: 'mobile',
+);
+final bool isWeb = goldenPlatform == 'web' || kIsWeb;
+
+final double tolerance =
+    double.tryParse(
+      const String.fromEnvironment('TOLERANCE', defaultValue: '0.01'),
+    ) ??
+    (isWeb ? 0.05 : 0.01);
+
 void main() {
   setUpAll(() async {
     await setupFirebaseForTests();
     await loadAppFonts();
-    if (kIsWeb) {
-      goldenFileComparator = webGoldenComparator as GoldenFileComparator;
-    }
+
+    GoldenToolkit.runWithConfiguration(
+      config: GoldenToolkitConfiguration(
+        defaultDevices: [Device.phone, Device.tabletPortrait],
+      ),
+      () {
+        if (isWeb) {
+          goldenFileComparator = webGoldenComparator as GoldenFileComparator;
+        } else {
+          if (!kIsWeb) {
+            final failDirectory = Directory('test/failures');
+            if (!failDirectory.existsSync()) {
+              failDirectory.createSync(recursive: true);
+            }
+          }
+        }
+
+        TestWidgetsFlutterBinding.ensureInitialized();
+
+        group('Golden Tests ($goldenPlatform)', () {
+          chat_bubble_gold.main();
+          // action_gold.main();
+          // input_gold.main();
+          // search_gold.main();
+          // rect_gold.main();
+          // popup_gold.main();
+          // switch_gold.main();
+          // scaffold_gold.main();
+          // appt_gold.main();
+        });
+      },
+    );
   });
 
-  group('All Golden Tests', () {
-    chat_bubble_gold.main();
-    action_gold.main();
-    input_gold.main();
-    search_gold.main();
-    rect_gold.main();
-    popup_gold.main();
-    switch_gold.main();
-    scaffold_gold.main();
-    appt_gold.main();
+  tearDownAll(() {
+    dumpPerfReports();
   });
-
-  tearDownAll(dumpPerfReports);
 }

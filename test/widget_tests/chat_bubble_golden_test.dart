@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:health_care_app/chat/chat_bubble.dart';
 
-import 'utils/golden_helper.dart';
+final String goldenPlatform = const String.fromEnvironment(
+  'GOLDEN_PLATFORM',
+  defaultValue: 'mobile',
+);
+final bool isWebPlatform = goldenPlatform == 'web';
 
 void main() {
-  testGoldens('ChatBubble - current vs remote user', (tester) async {
-    await goldenPerf(
-      tester,
-      Column(
-        children: const [
-          ChatBubble(message: 'Hi!', isCurrentUser: true),
-          ChatBubble(message: 'Hello', isCurrentUser: false),
-        ],
-      ),
-      'chat_bubble_default',
-      surfaceSize: const Size(220, 140),
-    );
+  group('ChatBubble Golden Tests', () {
+    testGoldens('ChatBubble renders correctly', (tester) async {
+      final builder =
+          DeviceBuilder()
+            ..overrideDevicesForAllScenarios(
+              devices: [Device.phone, Device.tabletPortrait],
+            )
+            ..addScenario(
+              widget: Material(
+                child: ChatBubble(
+                  message: 'Hello, world!',
+                  isCurrentUser: true,
+                ),
+              ),
+              name: 'chat_bubble_mine',
+            )
+            ..addScenario(
+              widget: Material(
+                child: ChatBubble(message: 'Hi there!', isCurrentUser: false),
+              ),
+              name: 'chat_bubble_other',
+            );
+
+      // Platform-specific golden file name
+      final goldenFileName =
+          'chat_bubble_${isWebPlatform ? 'web' : 'mobile'}.png';
+
+      await tester.pumpDeviceBuilder(builder);
+      await screenMatchesGolden(tester, goldenFileName);
+    });
   });
 }
