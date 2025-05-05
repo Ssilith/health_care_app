@@ -109,7 +109,7 @@ jobs:
           set -eo pipefail
           flutter test ${{ matrix.platformFlag }} \
             --tags golden \
-            test/golden_tests.dart
+            test/widget_tests/golden_tests.dart
         continue-on-error: true
 
       - name: Upload golden diffs if any

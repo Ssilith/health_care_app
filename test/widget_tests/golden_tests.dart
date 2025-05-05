@@ -4,18 +4,18 @@ import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:flutter_test/flutter_test.dart'
     show webGoldenComparator, goldenFileComparator;
 
-import 'widget_tests/chat_bubble_golden_test.dart' as chat_bubble_gold;
-import 'widget_tests/action_container_golden_test.dart' as action_gold;
-import 'widget_tests/text_input_form_golden_test.dart' as input_gold;
-import 'widget_tests/search_bar_container_golden_test.dart' as search_gold;
-import 'widget_tests/rectangular_button_golden_test.dart' as rect_gold;
-import 'widget_tests/popup_window_golden_test.dart' as popup_gold;
-import 'widget_tests/main_switch_golden_test.dart' as switch_gold;
-import 'widget_tests/blank_scaffold_golden_test.dart' as scaffold_gold;
-import 'widget_tests/appointment_container_golden_test.dart' as appt_gold;
+import 'chat_bubble_golden_test.dart' as chat_bubble_gold;
+import 'action_container_golden_test.dart' as action_gold;
+import 'text_input_form_golden_test.dart' as input_gold;
+import 'search_bar_container_golden_test.dart' as search_gold;
+import 'rectangular_button_golden_test.dart' as rect_gold;
+import 'popup_window_golden_test.dart' as popup_gold;
+import 'main_switch_golden_test.dart' as switch_gold;
+import 'blank_scaffold_golden_test.dart' as scaffold_gold;
+import 'appointment_container_golden_test.dart' as appt_gold;
 
-import 'utils/benchmark_helper.dart';
-import 'utils/firebase_test_setup.dart';
+import '../utils/benchmark_helper.dart';
+import '../utils/firebase_test_setup.dart';
 
 void main() {
   setUpAll(() async {
