@@ -21,7 +21,6 @@ void main() {
             appointment: appointment,
             onDelete: (_) {},
             onEdit: () {},
-            // Pass the mock service
             appointmentService: MockAppointmentService(),
           ),
         ),
