@@ -15,18 +15,3 @@ int getCurrentMemory() {
     return -1;
   }
 }
-
-Future<void> callNativeGC() async {
-  try {
-    if (jsu.hasProperty(html.window, 'gc')) {
-      jsu.callMethod(html.window, 'gc', []);
-    } else {
-      var arr = [];
-      for (var i = 0; i < 10; i++) {
-        arr.add(List.filled(1000000, 0));
-        await Future.delayed(const Duration(milliseconds: 10));
-        arr = [];
-      }
-    }
-  } catch (_) {}
-}
