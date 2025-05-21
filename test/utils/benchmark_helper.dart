@@ -3,9 +3,9 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'memory/mem_stub.dart'
-    if (dart.library.io) 'memory/mem_io.dart'
-    if (dart.library.html) 'memory/mem_web.dart';
+// import 'memory/mem_stub.dart'
+//     if (dart.library.io) 'memory/mem_io.dart'
+//     if (dart.library.html) 'memory/mem_web.dart';
 
 const int _defaultRepeat = int.fromEnvironment(
   'BENCHMARK_REPEAT',
@@ -22,7 +22,7 @@ Future<void> runPerf(
   final timings = <int>[];
   int failures = 0;
 
-  final rssBefore = getCurrentMemory();
+  // final rssBefore = getCurrentMemory();
 
   for (var i = 0; i < repeat; i++) {
     final sw = Stopwatch()..start();
@@ -38,7 +38,7 @@ Future<void> runPerf(
     }
   }
 
-  final rssAfter = getCurrentMemory();
+  // final rssAfter = getCurrentMemory();
 
   if (timings.isEmpty) timings.add(0);
   timings.sort();
@@ -70,12 +70,12 @@ Future<void> runPerf(
     'failures': failures,
     'flaky': failures / repeat > 0.02,
     'platform': kIsWeb ? 'web' : 'mobile',
-    'rss_before_kb': rssBefore == -1 ? null : rssBefore ~/ 1024,
-    'rss_after_kb': rssAfter == -1 ? null : rssAfter ~/ 1024,
-    'rss_delta_kb':
-        (rssBefore == -1 || rssAfter == -1)
-            ? null
-            : (rssAfter - rssBefore) ~/ 1024,
+    // 'rss_before_kb': rssBefore == -1 ? null : rssBefore ~/ 1024,
+    // 'rss_after_kb': rssAfter == -1 ? null : rssAfter ~/ 1024,
+    // 'rss_delta_kb':
+    //     (rssBefore == -1 || rssAfter == -1)
+    //         ? null
+    //         : (rssAfter - rssBefore) ~/ 1024,
   });
 }
 

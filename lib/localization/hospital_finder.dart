@@ -22,24 +22,24 @@ class _HospitalFinderState extends State<HospitalFinder> {
   @override
   void initState() {
     super.initState();
-    loadHospitals();
+    // loadHospitals();
   }
 
-  loadHospitals() async {
-    var locationData = await initializeLocation();
-    if (locationData != null) {
-      userLocation = LatLng(locationData.latitude, locationData.longitude);
-      var hospitalsList = await geoService.findNearestHospital(locationData);
-      setState(() {
-        hospitals = hospitalsList;
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  // loadHospitals() async {
+  //   var locationData = await initializeLocation();
+  //   if (locationData != null) {
+  //     userLocation = LatLng(locationData.latitude, locationData.longitude);
+  //     var hospitalsList = await geoService.findNearestHospital(locationData);
+  //     setState(() {
+  //       hospitals = hospitalsList;
+  //       isLoading = false;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
