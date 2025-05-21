@@ -1,0 +1,74 @@
+name: Flutter integration tests (web-assembly)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  BENCHMARK_REPEAT: 1000
+
+jobs:
+  integration-webassembly:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        id: flutter
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+
+      - name: Cache Flutter & pub packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ steps.flutter.outputs.cache-path }}
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+
+      - name: Enable web & install Chrome
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y chromium-browser || true
+          flutter config --enable-web
+          flutter devices
+
+      - name: Install Dart/Flutter dependencies
+        run: flutter pub get
+
+      - name: Run integration tests (WebAssembly) & capture benchmark JSON
+        run: |
+          set -eo pipefail
+          mkdir -p perf  
+          TS=$(date +%Y%m%d_%H%M%S)
+          echo "TS=$TS" >> $GITHUB_ENV
+
+          CMD="flutter test --platform chrome --wasm \
+                --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT \
+                test/integration_test.dart"
+
+          set +e
+          $CMD | tee integration_output.log
+          EXIT=${PIPESTATUS[0]}
+          set -e
+
+          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' integration_output.log |
+            sed '1d;$d' > perf/integration_webassembly_${TS}.json || true
+
+          if [[ $EXIT -ne 0 ]]; then
+            echo "==== integration tests failed (WebAssembly) ===="
+            cat integration_output.log
+          fi
+          exit $EXIT
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-webassembly-${{ env.TS }}
+          path: perf/integration_webassembly_${{ env.TS }}.json
+          if-no-files-found: warn
