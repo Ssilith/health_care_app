@@ -22,7 +22,7 @@ void main() {
     note.main();
     ice.main();
     chat.main();
-    // loc.main();
+    loc.main();
   });
 
   tearDownAll(dumpPerfReports);

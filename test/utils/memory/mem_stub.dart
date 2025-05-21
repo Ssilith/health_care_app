@@ -1,1 +1,1 @@
-// int getCurrentMemory() => -1;
+int getCurrentMemory() => -1;

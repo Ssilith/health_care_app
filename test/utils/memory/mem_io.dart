@@ -1,3 +1,3 @@
-// import 'dart:io' as io;
+import 'dart:io' as io;
 
-// int getCurrentMemory() => io.ProcessInfo.currentRss;
+int getCurrentMemory() => io.ProcessInfo.currentRss;
