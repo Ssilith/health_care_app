@@ -1,0 +1,74 @@
+name: Flutter widget tests (web-assembly)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  BENCHMARK_REPEAT: 1000
+
+jobs:
+  widget-webassembly:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        id: flutter
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+
+      - name: Cache Flutter & pub packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ steps.flutter.outputs.cache-path }}
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+
+      - name: Enable web & install Chrome
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y chromium-browser || true
+          flutter config --enable-web
+          flutter devices
+
+      - name: Install Dart/Flutter dependencies
+        run: flutter pub get
+
+      - name: Run widget tests (WebAssembly) & capture benchmark JSON
+        run: |
+          set -eo pipefail
+          mkdir -p perf
+          TS=$(date +%Y%m%d_%H%M%S)
+          echo "TS=$TS" >> $GITHUB_ENV
+
+          CMD="flutter test --platform chrome --wasm \
+                --dart-define=BENCHMARK_REPEAT=$BENCHMARK_REPEAT \
+                test/widget_test.dart"
+
+          set +e
+          $CMD | tee widget_output.log
+          EXIT=${PIPESTATUS[0]}
+          set -e
+
+          awk '/PERF_REPORT_START/,/PERF_REPORT_END/' widget_output.log |
+            sed '1d;$d' > perf/widget_webassembly_${TS}.json || true
+
+          if [[ $EXIT -ne 0 ]]; then
+            echo "==== widget tests failed (WebAssembly) ===="
+            cat widget_output.log
+          fi
+          exit $EXIT
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: widget-webassembly-${{ env.TS }}
+          path: perf/widget_webassembly_${{ env.TS }}.json
+          if-no-files-found: warn
