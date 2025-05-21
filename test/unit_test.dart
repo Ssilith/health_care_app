@@ -15,8 +15,8 @@ void main() {
     auth_tests.main();
     chat_tests.main();
     chat_err_tests.main();
-    // geo_tests.main();
-    // geo_empty_tests.main();
+    geo_tests.main();
+    geo_empty_tests.main();
     appointment_tests.main();
     ice_tests.main();
     notebook_tests.main();

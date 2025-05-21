@@ -22,24 +22,24 @@ class _PharmacyFinderState extends State<PharmacyFinder> {
   @override
   void initState() {
     super.initState();
-    // loadPharmacies();
+    loadPharmacies();
   }
 
-  // loadPharmacies() async {
-  //   var locationData = await initializeLocation();
-  //   if (locationData != null) {
-  //     userLocation = LatLng(locationData.latitude, locationData.longitude);
-  //     var pharmaciesList = await geoService.findNearestPharmacy(locationData);
-  //     setState(() {
-  //       pharmacies = pharmaciesList;
-  //       isLoading = false;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
+  loadPharmacies() async {
+    var locationData = await initializeLocation();
+    if (locationData != null) {
+      userLocation = LatLng(locationData.latitude, locationData.longitude);
+      var pharmaciesList = await geoService.findNearestPharmacy(locationData);
+      setState(() {
+        pharmacies = pharmaciesList;
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
